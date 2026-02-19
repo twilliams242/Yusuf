@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Story of Yusuf &amp; Joseph — A Parallel Reading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Islamic geometric border pattern (SVG) ── */
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8d9a0;
+  --deep-blue: #1a3a5c;
+  --teal: #1a6b5a;
+  --cream: #faf6ed;
+  --quran-bg: #f0f5ee;
+  --bible-bg: #eef2f7;
+  --text-dark: #2c2416;
+  --verse-num: #8a7a5a;
+  --border-width: 32px;
+}
+
+body {
+  background: var(--deep-blue);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--text-dark);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── Geometric border frame (CSS) ── */
+.islamic-border {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 100;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%231a3a5c'/%3E%3Cpolygon points='32,4 37,20 52,12 44,27 60,32 44,37 52,52 37,44 32,60 27,44 12,52 20,37 4,32 20,27 12,12 27,20' fill='none' stroke='%23c9a84c' stroke-width='1.2' opacity='0.7'/%3E%3Cpolygon points='32,16 42,22 48,32 42,42 32,48 22,42 16,32 22,22' fill='none' stroke='%23c9a84c' stroke-width='0.8' opacity='0.5'/%3E%3Ccircle cx='32' cy='32' r='2.5' fill='%23c9a84c' opacity='0.6'/%3E%3Cline x1='0' y1='0' x2='20' y2='20' stroke='%23c9a84c' stroke-width='0.5' opacity='0.3'/%3E%3Cline x1='64' y1='0' x2='44' y2='20' stroke='%23c9a84c' stroke-width='0.5' opacity='0.3'/%3E%3Cline x1='0' y1='64' x2='20' y2='44' stroke='%23c9a84c' stroke-width='0.5' opacity='0.3'/%3E%3Cline x1='64' y1='64' x2='44' y2='44' stroke='%23c9a84c' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E");
+  /* Mask: show border edges only, cut out center */
+  -webkit-mask-image:
+    linear-gradient(to bottom, black var(--border-width), transparent var(--border-width), transparent calc(100% - var(--border-width)), black calc(100% - var(--border-width))),
+    linear-gradient(to right, black var(--border-width), transparent var(--border-width), transparent calc(100% - var(--border-width)), black calc(100% - var(--border-width)));
+  mask-image:
+    linear-gradient(to bottom, black var(--border-width), transparent var(--border-width), transparent calc(100% - var(--border-width)), black calc(100% - var(--border-width))),
+    linear-gradient(to right, black var(--border-width), transparent var(--border-width), transparent calc(100% - var(--border-width)), black calc(100% - var(--border-width)));
+}
+
+/* Inner gold border line via box-shadow on wrapper */
+.page-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--gold);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── Main content area ── */
+.page-wrapper {
+  margin: var(--border-width);
+  background: var(--cream);
+  min-height: calc(100vh - var(--border-width) * 2);
+  position: relative;
+}
+
+/* ── Header ── */
+.page-header {
+  text-align: center;
+  padding: 60px 40px 40px;
+  border-bottom: 2px solid var(--gold);
+  background: linear-gradient(180deg, #f7f0df 0%, var(--cream) 100%);
+}
+
+.page-header h1 {
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: var(--deep-blue);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+
+.page-header h1 .arabic-title {
+  font-family: 'Amiri', serif;
+  font-size: 2.2rem;
+  display: block;
+  color: var(--teal);
+  margin-bottom: 8px;
+  direction: rtl;
+}
+
+.page-header .subtitle {
+  font-size: 1.2rem;
+  color: var(--verse-num);
+  font-style: italic;
+}
+
+/* ── Decorative divider ── */
+.ornament {
+  text-align: center;
+  padding: 10px 0;
+  color: var(--gold);
+  font-size: 1.6rem;
+  letter-spacing: 0.5em;
+  user-select: none;
+}
+
+/* ── Navigation / TOC ── */
+.toc {
+  position: sticky;
+  top: var(--border-width);
+  z-index: 50;
+  background: var(--cream);
+  border-bottom: 1px solid var(--gold-light);
+  padding: 10px 20px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.toc-legend {
+  width: 100%;
+  text-align: center;
+  font-size: 0.68rem;
+  font-family: sans-serif;
+  color: var(--verse-num);
+  margin-bottom: 4px;
+  letter-spacing: 0.03em;
+}
+
+.toc-legend span {
+  margin: 0 10px;
+  white-space: nowrap;
+}
+
+.toc-legend .legend-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 3px;
+  vertical-align: middle;
+  margin-right: 4px;
+  border-radius: 1px;
+}
+
+.toc-legend .swatch-parallel { background: var(--gold); }
+.toc-legend .swatch-quran { background: #2da882; }
+.toc-legend .swatch-bible { background: #4a8bbf; }
+
+.toc a {
+  font-size: 0.82rem;
+  color: var(--deep-blue);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 3px;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.toc a:hover {
+  background: var(--gold-light);
+}
+
+.toc a.active {
+  background: rgba(201, 168, 76, 0.18);
+  font-weight: 600;
+}
+
+.toc a.quran-only { border-left: 3px solid #2da882; }
+.toc a.bible-only { border-left: 3px solid #4a8bbf; }
+.toc a.parallel { border-left: 3px solid var(--gold); }
+
+/* ── Section ── */
+.section {
+  padding: 40px 30px;
+  border-bottom: 1px solid var(--gold-light);
+}
+
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.section-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--teal);
+  margin-bottom: 4px;
+}
+
+.section-header .section-refs {
+  font-size: 0.9rem;
+  color: var(--verse-num);
+  font-style: italic;
+}
+
+.section-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 2px 10px;
+  border-radius: 3px;
+  margin-bottom: 8px;
+  font-family: sans-serif;
+}
+
+.section-badge.quran-only-badge {
+  background: var(--teal);
+  color: white;
+}
+
+.section-badge.bible-only-badge {
+  background: var(--deep-blue);
+  color: white;
+}
+
+/* ── Two-column parallel layout ── */
+.parallel-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.column {
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.column.quran-col {
+  background: var(--quran-bg);
+  border: 1px solid #c8d8c4;
+}
+
+.column.bible-col {
+  background: var(--bible-bg);
+  border: 1px solid #c4ced8;
+}
+
+.column-title {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  font-family: sans-serif;
+  font-weight: 600;
+}
+
+.quran-col .column-title { color: var(--teal); }
+.bible-col .column-title { color: var(--deep-blue); }
+
+/* ── Full-width single-source ── */
+.single-source {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.single-source.quran-col { background: var(--quran-bg); border: 1px solid #c8d8c4; }
+.single-source.bible-col { background: var(--bible-bg); border: 1px solid #c4ced8; }
+
+/* ── Text styling ── */
+.original-text {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(0,0,0,0.1);
+}
+
+.arabic-text {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Amiri', serif;
+  font-size: 1.4rem;
+  line-height: 2.2;
+  color: var(--text-dark);
+}
+
+.hebrew-text {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.25rem;
+  line-height: 2.0;
+  color: var(--text-dark);
+}
+
+.english-text {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #3a3a3a;
+}
+
+.verse {
+  margin-bottom: 10px;
+}
+
+.verse-num {
+  font-size: 0.75em;
+  color: var(--verse-num);
+  font-family: sans-serif;
+  font-weight: 600;
+  vertical-align: super;
+  margin: 0 2px;
+}
+
+.rtl-verse-num {
+  font-size: 0.7em;
+  color: var(--verse-num);
+  font-family: sans-serif;
+  font-weight: 600;
+  display: inline;
+  margin-inline-start: 6px;
+}
+
+.text-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--verse-num);
+  margin-bottom: 6px;
+  font-family: sans-serif;
+}
+
+.no-text-note {
+  text-align: center;
+  color: var(--verse-num);
+  font-style: italic;
+  padding: 30px 20px;
+}
+
+/* ── Loading ── */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--verse-num);
+}
+
+.loading .spinner {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--gold-light);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-msg {
+  text-align: center;
+  padding: 20px;
+  color: #a04040;
+  font-style: italic;
+}
+
+/* ── Footer ── */
+.page-footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--verse-num);
+  font-size: 0.85rem;
+  border-top: 2px solid var(--gold);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  :root { --border-width: 16px; }
+
+  .parallel-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header h1 { font-size: 2rem; }
+  .page-header h1 .arabic-title { font-size: 1.6rem; }
+  .section { padding: 24px 16px; }
+
+  .toc {
+    gap: 2px 6px;
+    padding: 8px 10px;
+  }
+
+  .toc a { font-size: 0.72rem; padding: 3px 6px; }
+}
+
+@media (max-width: 500px) {
+  :root { --border-width: 10px; }
+  .page-header { padding: 30px 16px 24px; }
+  .page-header h1 { font-size: 1.5rem; }
+  .arabic-text { font-size: 1.2rem; }
+  .hebrew-text { font-size: 1.1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Islamic geometric border frame (rendered via CSS background) -->
+<div class="islamic-border"></div>
+
+<!-- Page content -->
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <h1>
+      <span class="arabic-title">قصة يوسف</span>
+      The Story of Yusuf &amp; Joseph
+    </h1>
+    <div class="subtitle">A Parallel Reading from the Quran &amp; the Bible</div>
+    <div class="ornament">&#x2726; &#x2726; &#x2726;</div>
+    <div class="subtitle" style="font-size: 0.9rem; margin-top: 4px;">
+      Surah Yusuf (Quran 12) &bull; Genesis 37&ndash;50
+    </div>
+  </header>
+
+  <nav class="toc" id="toc"></nav>
+
+  <main id="content">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>Loading sacred texts&hellip;</div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <p>Quran text: Arabic (Uthmani script) &bull; English translation: Sahih International</p>
+    <p>Bible text: Hebrew (Masoretic) &bull; English translation: JPS / Sefaria</p>
+    <p style="margin-top: 8px;">Presented for study and reflection.</p>
+  </footer>
+
+</div>
+
+<script>
+// ── Section definitions ──
+const SECTIONS = [
+  {
+    id: 'prologue',
+    title: 'Prologue',
+    quranRef: 'Quran 12:1–3',
+    bibleRef: null,
+    quranVerses: [1, 3],
+    bibleChapters: null,
+    type: 'quran-only'
+  },
+  {
+    id: 'the-dream',
+    title: 'The Dream',
+    quranRef: 'Quran 12:4–6',
+    bibleRef: 'Genesis 37:1–11',
+    quranVerses: [4, 6],
+    bibleChapters: [{ch: 37, from: 1, to: 11}],
+    type: 'parallel'
+  },
+  {
+    id: 'brothers-plot',
+    title: "The Brothers' Plot",
+    quranRef: 'Quran 12:7–10',
+    bibleRef: 'Genesis 37:12–20',
+    quranVerses: [7, 10],
+    bibleChapters: [{ch: 37, from: 12, to: 20}],
+    type: 'parallel'
+  },
+  {
+    id: 'into-the-well',
+    title: 'Into the Well',
+    quranRef: 'Quran 12:11–18',
+    bibleRef: 'Genesis 37:21–36',
+    quranVerses: [11, 18],
+    bibleChapters: [{ch: 37, from: 21, to: 36}],
+    type: 'parallel'
+  },
+  {
+    id: 'judah-tamar',
+    title: 'Judah and Tamar',
+    quranRef: null,
+    bibleRef: 'Genesis 38:1–30',
+    quranVerses: null,
+    bibleChapters: [{ch: 38, from: 1, to: 30}],
+    type: 'bible-only'
+  },
+  {
+    id: 'masters-house',
+    title: "Life in the Master's House",
+    quranRef: 'Quran 12:19–22',
+    bibleRef: 'Genesis 39:1–6',
+    quranVerses: [19, 22],
+    bibleChapters: [{ch: 39, from: 1, to: 6}],
+    type: 'parallel'
+  },
+  {
+    id: 'the-seduction',
+    title: 'The Seduction',
+    quranRef: 'Quran 12:23–34',
+    bibleRef: 'Genesis 39:7–20',
+    quranVerses: [23, 34],
+    bibleChapters: [{ch: 39, from: 7, to: 20}],
+    type: 'parallel'
+  },
+  {
+    id: 'imprisonment-dreams',
+    title: 'Imprisonment &amp; Dreams',
+    quranRef: 'Quran 12:35–42',
+    bibleRef: 'Genesis 39:21–40:23',
+    quranVerses: [35, 42],
+    bibleChapters: [{ch: 39, from: 21, to: 23}, {ch: 40, from: 1, to: 23}],
+    type: 'parallel'
+  },
+  {
+    id: 'royal-dream-power',
+    title: 'The Royal Dream &amp; Rise to Power',
+    quranRef: 'Quran 12:43–57',
+    bibleRef: 'Genesis 41:1–57',
+    quranVerses: [43, 57],
+    bibleChapters: [{ch: 41, from: 1, to: 57}],
+    type: 'parallel'
+  },
+  {
+    id: 'first-visit',
+    title: "Brothers' First Visit",
+    quranRef: 'Quran 12:58–62',
+    bibleRef: 'Genesis 42:1–38',
+    quranVerses: [58, 62],
+    bibleChapters: [{ch: 42, from: 1, to: 38}],
+    type: 'parallel'
+  },
+  {
+    id: 'return-cup',
+    title: "Brothers' Return &amp; the Cup",
+    quranRef: 'Quran 12:63–79',
+    bibleRef: 'Genesis 43:1–44:34',
+    quranVerses: [63, 79],
+    bibleChapters: [{ch: 43, from: 1, to: 34}, {ch: 44, from: 1, to: 34}],
+    type: 'parallel'
+  },
+  {
+    id: 'fathers-grief',
+    title: "A Father's Grief",
+    quranRef: 'Quran 12:80–87',
+    bibleRef: 'Genesis 42:36–38; 43:14',
+    quranVerses: [80, 87],
+    bibleChapters: [{ch: 42, from: 36, to: 38}, {ch: 43, from: 14, to: 14}],
+    type: 'parallel'
+  },
+  {
+    id: 'revelation-reunion',
+    title: 'The Revelation &amp; Reunion',
+    quranRef: 'Quran 12:88–101',
+    bibleRef: 'Genesis 45:1–47:12',
+    quranVerses: [88, 101],
+    bibleChapters: [{ch: 45, from: 1, to: 28}, {ch: 46, from: 1, to: 34}, {ch: 47, from: 1, to: 12}],
+    type: 'parallel'
+  },
+  {
+    id: 'settlement-blessings',
+    title: 'Settlement &amp; Blessings',
+    quranRef: null,
+    bibleRef: 'Genesis 47:13–50:14',
+    quranVerses: null,
+    bibleChapters: [{ch: 47, from: 13, to: 31}, {ch: 48, from: 1, to: 22}, {ch: 49, from: 1, to: 33}, {ch: 50, from: 1, to: 14}],
+    type: 'bible-only'
+  },
+  {
+    id: 'final-forgiveness',
+    title: 'Final Forgiveness &amp; Death',
+    quranRef: null,
+    bibleRef: 'Genesis 50:15–26',
+    quranVerses: null,
+    bibleChapters: [{ch: 50, from: 15, to: 26}],
+    type: 'bible-only'
+  },
+  {
+    id: 'epilogue',
+    title: 'Epilogue',
+    quranRef: 'Quran 12:102–111',
+    bibleRef: null,
+    quranVerses: [102, 111],
+    bibleChapters: null,
+    type: 'quran-only'
+  }
+];
+
+// ── State ──
+let quranArabic = [];   // array of {numberInSurah, text}
+let quranEnglish = [];
+let bibleData = {};     // keyed by chapter number: {he: [...], text: [...]}
+
+// ── API fetching ──
+
+async function fetchQuran() {
+  const [arRes, enRes] = await Promise.all([
+    fetch('https://api.alquran.cloud/v1/surah/12/quran-uthmani'),
+    fetch('https://api.alquran.cloud/v1/surah/12/en.sahih')
+  ]);
+
+  if (!arRes.ok || !enRes.ok) throw new Error('Failed to fetch Quran text');
+
+  const arData = await arRes.json();
+  const enData = await enRes.json();
+
+  quranArabic = arData.data.ayahs;
+  quranEnglish = enData.data.ayahs;
+}
+
+async function fetchBibleChapter(ch) {
+  const res = await fetch(`https://www.sefaria.org/api/texts/Genesis.${ch}`);
+  if (!res.ok) throw new Error(`Failed to fetch Genesis ${ch}`);
+  const data = await res.json();
+  bibleData[ch] = { he: data.he, text: data.text };
+}
+
+async function fetchBible() {
+  // Fetch all chapters 37-50 in parallel
+  const chapters = [];
+  for (let ch = 37; ch <= 50; ch++) chapters.push(ch);
+  await Promise.all(chapters.map(ch => fetchBibleChapter(ch)));
+}
+
+// ── Rendering helpers ──
+
+function stripHtml(str) {
+  if (!str) return '';
+  // Remove HTML tags that Sefaria sometimes includes
+  return str.replace(/<[^>]*>/g, '');
+}
+
+function getQuranVerses(from, to) {
+  const arabic = quranArabic.filter(a => a.numberInSurah >= from && a.numberInSurah <= to);
+  const english = quranEnglish.filter(a => a.numberInSurah >= from && a.numberInSurah <= to);
+  return { arabic, english };
+}
+
+function getBibleVerses(chaptersSpec) {
+  // chaptersSpec is an array of {ch, from, to}
+  const result = [];
+  for (const spec of chaptersSpec) {
+    const chData = bibleData[spec.ch];
+    if (!chData) continue;
+    for (let v = spec.from; v <= spec.to; v++) {
+      const idx = v - 1; // 0-indexed
+      if (idx >= 0 && idx < chData.he.length) {
+        result.push({
+          ref: `${spec.ch}:${v}`,
+          he: stripHtml(chData.he[idx] || ''),
+          en: stripHtml(chData.text[idx] || '')
+        });
+      }
+    }
+  }
+  return result;
+}
+
+function renderQuranBlock(from, to) {
+  const { arabic, english } = getQuranVerses(from, to);
+
+  let arHtml = '<div class="text-label">Arabic</div><div class="original-text arabic-text">';
+  for (const a of arabic) {
+    arHtml += `<span class="verse"><span class="rtl-verse-num">﴿${a.numberInSurah}﴾</span> ${a.text} </span>`;
+  }
+  arHtml += '</div>';
+
+  let enHtml = '<div class="text-label">English (Sahih International)</div><div class="english-text">';
+  for (const e of english) {
+    enHtml += `<span class="verse"><span class="verse-num">${e.numberInSurah}</span> ${e.text} </span>`;
+  }
+  enHtml += '</div>';
+
+  return arHtml + enHtml;
+}
+
+function renderBibleBlock(chaptersSpec) {
+  const verses = getBibleVerses(chaptersSpec);
+
+  let heHtml = '<div class="text-label">Hebrew (Masoretic)</div><div class="original-text hebrew-text">';
+  for (const v of verses) {
+    heHtml += `<span class="verse"><span class="rtl-verse-num">(${v.ref})</span> ${v.he} </span>`;
+  }
+  heHtml += '</div>';
+
+  let enHtml = '<div class="text-label">English</div><div class="english-text">';
+  for (const v of verses) {
+    enHtml += `<span class="verse"><span class="verse-num">${v.ref}</span> ${v.en} </span>`;
+  }
+  enHtml += '</div>';
+
+  return heHtml + enHtml;
+}
+
+// ── Build page ──
+
+function buildTOC() {
+  const toc = document.getElementById('toc');
+  const legend = `<div class="toc-legend">
+    <span><span class="legend-swatch swatch-parallel"></span>Parallel</span>
+    <span><span class="legend-swatch swatch-quran"></span>Quran Only</span>
+    <span><span class="legend-swatch swatch-bible"></span>Bible Only</span>
+  </div>`;
+  const links = SECTIONS.map(s => {
+    const cls = s.type === 'quran-only' ? 'quran-only' : s.type === 'bible-only' ? 'bible-only' : 'parallel';
+    return `<a href="#${s.id}" class="${cls}">${s.title}</a>`;
+  }).join('');
+  toc.innerHTML = legend + links;
+}
+
+function buildSections() {
+  const content = document.getElementById('content');
+  let html = '';
+
+  for (const s of SECTIONS) {
+    html += `<section class="section" id="${s.id}">`;
+    html += `<div class="section-header">`;
+
+    if (s.type === 'quran-only') {
+      html += `<span class="section-badge quran-only-badge">Quran Only</span>`;
+    } else if (s.type === 'bible-only') {
+      html += `<span class="section-badge bible-only-badge">Bible Only</span>`;
+    }
+
+    html += `<h2>${s.title}</h2>`;
+
+    const refs = [];
+    if (s.quranRef) refs.push(s.quranRef);
+    if (s.bibleRef) refs.push(s.bibleRef);
+    html += `<div class="section-refs">${refs.join(' &bull; ')}</div>`;
+    html += `</div>`;
+
+    if (s.type === 'parallel') {
+      html += `<div class="parallel-columns">`;
+      html += `<div class="column quran-col">`;
+      html += `<div class="column-title">Quran — سورة يوسف</div>`;
+      html += renderQuranBlock(s.quranVerses[0], s.quranVerses[1]);
+      html += `</div>`;
+      html += `<div class="column bible-col">`;
+      html += `<div class="column-title">Bible — בראשית</div>`;
+      html += renderBibleBlock(s.bibleChapters);
+      html += `</div>`;
+      html += `</div>`;
+    } else if (s.type === 'quran-only') {
+      html += `<div class="single-source quran-col">`;
+      html += `<div class="column-title">Quran — سورة يوسف</div>`;
+      html += renderQuranBlock(s.quranVerses[0], s.quranVerses[1]);
+      html += `</div>`;
+    } else if (s.type === 'bible-only') {
+      html += `<div class="single-source bible-col">`;
+      html += `<div class="column-title">Bible — בראשית</div>`;
+      html += renderBibleBlock(s.bibleChapters);
+      html += `</div>`;
+    }
+
+    html += `</section>`;
+  }
+
+  content.innerHTML = html;
+}
+
+// ── Initialize ──
+
+function setupActiveTracking() {
+  const tocLinks = document.querySelectorAll('.toc a');
+  const sections = document.querySelectorAll('.section');
+  // Compute the TOC bar height so we can offset the rootMargin
+  const toc = document.getElementById('toc');
+  const tocHeight = toc.offsetHeight + 40; // small extra buffer
+
+  let currentId = '';
+
+  const observer = new IntersectionObserver((entries) => {
+    // Find the topmost visible section
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        currentId = entry.target.id;
+        break;
+      }
+    }
+    // Also handle: pick the one closest to top
+    let best = null;
+    let bestTop = Infinity;
+    sections.forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      // Section is at least partially visible below the TOC
+      if (rect.top < window.innerHeight && rect.bottom > tocHeight) {
+        if (rect.top < bestTop) {
+          bestTop = rect.top;
+          best = sec.id;
+        }
+      }
+    });
+    if (best) currentId = best;
+
+    tocLinks.forEach(link => {
+      if (link.getAttribute('href') === '#' + currentId) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }, {
+    rootMargin: `-${tocHeight}px 0px -40% 0px`,
+    threshold: 0
+  });
+
+  sections.forEach(sec => observer.observe(sec));
+}
+
+async function init() {
+  buildTOC();
+
+  try {
+    // Fetch both sources in parallel
+    await Promise.all([fetchQuran(), fetchBible()]);
+    buildSections();
+    setupActiveTracking();
+  } catch (err) {
+    console.error('Error loading texts:', err);
+    document.getElementById('content').innerHTML = `
+      <div class="error-msg">
+        <p>Unable to load texts. Please check your internet connection and try refreshing.</p>
+        <p style="font-size: 0.8rem; margin-top: 8px;">${err.message}</p>
+      </div>
+    `;
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
