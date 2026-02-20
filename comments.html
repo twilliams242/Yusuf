@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reflections — The Story of Yusuf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Shared variables ── */
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8d9a0;
+  --deep-blue: #1a3a5c;
+  --teal: #1a6b5a;
+  --cream: #faf6ed;
+  --text-dark: #2c2416;
+  --verse-num: #8a7a5a;
+  --border-width: 32px;
+}
+
+body {
+  background: var(--deep-blue);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--text-dark);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── Islamic geometric border frame ── */
+.islamic-border {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 100;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%231a3a5c'/%3E%3Cpolygon points='32,4 37,20 52,12 44,27 60,32 44,37 52,52 37,44 32,60 27,44 12,52 20,37 4,32 20,27 12,12 27,20' fill='none' stroke='%23c9a84c' stroke-width='1.2' opacity='0.7'/%3E%3Cpolygon points='32,16 42,22 48,32 42,42 32,48 22,42 16,32 22,22' fill='none' stroke='%23c9a84c' stroke-width='0.8' opacity='0.5'/%3E%3Ccircle cx='32' cy='32' r='2.5' fill='%23c9a84c' opacity='0.6'/%3E%3Cline x1='0' y1='0' x2='20' y2='20' stroke='%23c9a84c' stroke-width='0.5' opacity='0.3'/%3E%3Cline x1='64' y1='0' x2='44' y2='20' stroke='%23c9a84c' stroke-width='0.5' opacity='0.3'/%3E%3Cline x1='0' y1='64' x2='20' y2='44' stroke='%23c9a84c' stroke-width='0.5' opacity='0.3'/%3E%3Cline x1='64' y1='64' x2='44' y2='44' stroke='%23c9a84c' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E");
+  -webkit-mask-image:
+    linear-gradient(to bottom, black var(--border-width), transparent var(--border-width), transparent calc(100% - var(--border-width)), black calc(100% - var(--border-width))),
+    linear-gradient(to right, black var(--border-width), transparent var(--border-width), transparent calc(100% - var(--border-width)), black calc(100% - var(--border-width)));
+  mask-image:
+    linear-gradient(to bottom, black var(--border-width), transparent var(--border-width), transparent calc(100% - var(--border-width)), black calc(100% - var(--border-width))),
+    linear-gradient(to right, black var(--border-width), transparent var(--border-width), transparent calc(100% - var(--border-width)), black calc(100% - var(--border-width)));
+}
+
+.page-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--gold);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.page-wrapper {
+  margin: var(--border-width);
+  background: var(--cream);
+  min-height: calc(100vh - var(--border-width) * 2);
+  position: relative;
+}
+
+/* ── Header ── */
+.page-header {
+  text-align: center;
+  padding: 50px 40px 30px;
+  border-bottom: 2px solid var(--gold);
+  background: linear-gradient(180deg, #f7f0df 0%, var(--cream) 100%);
+}
+
+.page-header h1 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--deep-blue);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+
+.page-header .subtitle {
+  font-size: 1.05rem;
+  color: var(--verse-num);
+  font-style: italic;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+
+.back-link:hover { color: var(--teal); }
+
+.ornament {
+  text-align: center;
+  padding: 8px 0;
+  color: var(--gold);
+  font-size: 1.4rem;
+  letter-spacing: 0.5em;
+  user-select: none;
+}
+
+/* ── Footer ── */
+.page-footer {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--verse-num);
+  font-size: 0.85rem;
+  border-top: 2px solid var(--gold);
+}
+
+.page-footer a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.page-footer a:hover { color: var(--teal); }
+
+/* ── Comment Form ── */
+.comment-form-section {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 36px 30px;
+}
+
+.comment-form-section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--teal);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-row {
+  margin-bottom: 16px;
+}
+
+.form-row label {
+  display: block;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--verse-num);
+  font-family: sans-serif;
+  margin-bottom: 4px;
+}
+
+.form-row input,
+.form-row textarea,
+.form-row select {
+  width: 100%;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1rem;
+  padding: 10px 12px;
+  border: 1px solid var(--gold-light);
+  border-radius: 4px;
+  background: white;
+  color: var(--text-dark);
+  transition: border-color 0.2s;
+}
+
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.form-row textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row select {
+  cursor: pointer;
+}
+
+.submit-btn {
+  display: block;
+  width: 100%;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 12px 24px;
+  background: var(--gold);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.submit-btn:hover { background: #b8963f; }
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-message {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.form-message.success { color: var(--teal); }
+.form-message.error { color: #a04040; }
+
+/* ── Category Sections ── */
+.comments-display {
+  padding: 10px 30px 40px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.category-section {
+  margin-bottom: 12px;
+  border: 1px solid var(--gold-light);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.category-header:hover {
+  background: rgba(201, 168, 76, 0.08);
+}
+
+.category-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--deep-blue);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-icon {
+  font-size: 1.1rem;
+}
+
+.category-count {
+  font-size: 0.72rem;
+  font-family: sans-serif;
+  color: var(--verse-num);
+  background: rgba(201, 168, 76, 0.15);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+
+.collapse-arrow {
+  font-size: 0.8rem;
+  color: var(--verse-num);
+  transition: transform 0.3s;
+}
+
+.category-section.open .collapse-arrow {
+  transform: rotate(180deg);
+}
+
+.category-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.category-section.open .category-body {
+  max-height: 5000px;
+}
+
+.category-body-inner {
+  padding: 4px 20px 20px;
+}
+
+.category-placeholder {
+  text-align: center;
+  color: var(--verse-num);
+  font-style: italic;
+  padding: 16px 0;
+  font-size: 0.9rem;
+}
+
+/* ── Comment Card ── */
+.comment-card {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.comment-card:last-child {
+  border-bottom: none;
+}
+
+.comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: var(--deep-blue);
+  font-size: 1rem;
+}
+
+.comment-time {
+  font-size: 0.72rem;
+  color: var(--verse-num);
+  font-family: sans-serif;
+}
+
+.comment-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #3a3a3a;
+}
+
+/* ── Loading state ── */
+.loading-comments {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--verse-num);
+  font-style: italic;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  :root { --border-width: 16px; }
+  .page-header h1 { font-size: 1.7rem; }
+  .comment-form-section { padding: 24px 20px; }
+  .comments-display { padding: 10px 16px 30px; }
+}
+
+@media (max-width: 500px) {
+  :root { --border-width: 10px; }
+  .page-header { padding: 24px 16px 20px; }
+  .page-header h1 { font-size: 1.4rem; }
+  .category-header { padding: 12px 14px; }
+  .category-body-inner { padding: 4px 14px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="islamic-border"></div>
+
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <a href="index.html" class="back-link">&larr; Back to the Story</a>
+    <h1>Reflections</h1>
+    <div class="subtitle">Thoughts and reflections from readers of The Story of Yusuf</div>
+    <div class="ornament">&#x2726; &#x2726; &#x2726;</div>
+  </header>
+
+  <!-- Comment Form -->
+  <section class="comment-form-section">
+    <h2>Share Your Reflection</h2>
+    <form id="commentForm" autocomplete="off">
+      <div class="form-row">
+        <label for="nameInput">Your First Name</label>
+        <input type="text" id="nameInput" maxlength="30" placeholder="e.g. Ahmad" required>
+      </div>
+      <div class="form-row">
+        <label for="categorySelect">Category</label>
+        <select id="categorySelect" required>
+          <option value="positive">Positive Feedback</option>
+          <option value="differences">Differences in the Stories</option>
+          <option value="insights">Insights About Reality</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="commentInput">Your Reflection</label>
+        <textarea id="commentInput" maxlength="500" placeholder="Share your thoughts..." required></textarea>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn">Submit Reflection</button>
+      <div id="formMessage" class="form-message"></div>
+    </form>
+  </section>
+
+  <!-- Comments Display -->
+  <section class="comments-display">
+    <div id="commentsContainer">
+      <div class="loading-comments">Loading reflections&hellip;</div>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <p><a href="index.html">&larr; Return to The Story of Yusuf</a></p>
+  </footer>
+
+</div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+// ── Firebase Configuration ──
+// TODO: Replace with your Firebase project config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+let db = null;
+let commentsRef = null;
+let firebaseReady = false;
+
+// Only initialize Firebase if the config has been filled in
+if (firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('YOUR_')) {
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    commentsRef = db.ref('comments');
+    firebaseReady = true;
+  } catch (err) {
+    console.warn('Firebase initialization error:', err.message);
+  }
+} else {
+  console.info('Firebase not configured yet. Replace placeholder values in comments.html.');
+}
+
+// ── Category Definitions ──
+const CATEGORIES = [
+  { key: 'positive', icon: '&#x2728;', label: 'Positive Feedback' },
+  { key: 'differences', icon: '&#x1F50D;', label: 'Differences in the Stories' },
+  { key: 'insights', icon: '&#x1F4A1;', label: 'Insights About Reality' },
+  { key: 'other', icon: '&#x1F4AC;', label: 'Other' }
+];
+
+// ── Helpers ──
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function timeAgo(timestamp) {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return days === 1 ? 'yesterday' : `${days} days ago`;
+  const months = Math.floor(days / 30);
+  return months === 1 ? '1 month ago' : `${months} months ago`;
+}
+
+// ── Build Category Sections ──
+function buildCategorySections() {
+  const container = document.getElementById('commentsContainer');
+  container.innerHTML = CATEGORIES.map(cat => `
+    <div class="category-section open" data-category="${cat.key}">
+      <div class="category-header" onclick="toggleCategory('${cat.key}')">
+        <h3>
+          <span class="category-icon">${cat.icon}</span>
+          ${cat.label}
+          <span class="category-count" id="count-${cat.key}">0</span>
+        </h3>
+        <span class="collapse-arrow">&#x25BC;</span>
+      </div>
+      <div class="category-body">
+        <div class="category-body-inner" id="cards-${cat.key}">
+          <div class="category-placeholder">No reflections yet in this category.</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Toggle Collapse ──
+function toggleCategory(key) {
+  const section = document.querySelector(`.category-section[data-category="${key}"]`);
+  section.classList.toggle('open');
+}
+
+// ── Render Comments ──
+function renderComments(snapshot) {
+  const commentsByCategory = {
+    positive: [],
+    differences: [],
+    insights: [],
+    other: []
+  };
+
+  snapshot.forEach(child => {
+    const data = child.val();
+    const cat = commentsByCategory[data.category] ? data.category : 'other';
+    commentsByCategory[cat].push(data);
+  });
+
+  // Sort newest first within each category
+  for (const cat of Object.keys(commentsByCategory)) {
+    commentsByCategory[cat].sort((a, b) => b.timestamp - a.timestamp);
+  }
+
+  // Render each category
+  for (const cat of CATEGORIES) {
+    const cards = commentsByCategory[cat.key];
+    const container = document.getElementById(`cards-${cat.key}`);
+    const countEl = document.getElementById(`count-${cat.key}`);
+    countEl.textContent = cards.length;
+
+    if (cards.length === 0) {
+      container.innerHTML = '<div class="category-placeholder">No reflections yet in this category.</div>';
+    } else {
+      container.innerHTML = cards.map(c => `
+        <div class="comment-card">
+          <div class="comment-meta">
+            <span class="comment-author">${escapeHtml(c.name)}</span>
+            <span class="comment-time">${timeAgo(c.timestamp)}</span>
+          </div>
+          <div class="comment-text">${escapeHtml(c.text)}</div>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+// ── Form Submission ──
+let lastSubmitTime = 0;
+
+document.getElementById('commentForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const msgEl = document.getElementById('formMessage');
+  const btn = document.getElementById('submitBtn');
+
+  // Rate limit: 30 seconds between submissions
+  const now = Date.now();
+  if (now - lastSubmitTime < 30000) {
+    const wait = Math.ceil((30000 - (now - lastSubmitTime)) / 1000);
+    msgEl.className = 'form-message error';
+    msgEl.textContent = `Please wait ${wait} seconds before submitting again.`;
+    return;
+  }
+
+  const name = document.getElementById('nameInput').value.trim();
+  const text = document.getElementById('commentInput').value.trim();
+  const category = document.getElementById('categorySelect').value;
+
+  if (!name || !text) {
+    msgEl.className = 'form-message error';
+    msgEl.textContent = 'Please fill in your name and reflection.';
+    return;
+  }
+
+  if (name.length > 30 || text.length > 500) {
+    msgEl.className = 'form-message error';
+    msgEl.textContent = 'Name must be under 30 characters and reflection under 500.';
+    return;
+  }
+
+  if (!firebaseReady) {
+    msgEl.className = 'form-message error';
+    msgEl.textContent = 'Comments are not yet connected. Firebase setup is required.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  msgEl.textContent = '';
+
+  try {
+    await commentsRef.push({
+      name: name,
+      text: text,
+      category: category,
+      timestamp: Date.now()
+    });
+
+    lastSubmitTime = Date.now();
+    document.getElementById('commentInput').value = '';
+    msgEl.className = 'form-message success';
+    msgEl.textContent = 'Thank you for sharing your reflection!';
+    btn.disabled = false;
+    btn.textContent = 'Submit Reflection';
+
+    // Clear success message after 4s
+    setTimeout(() => { msgEl.textContent = ''; }, 4000);
+  } catch (err) {
+    console.error('Error submitting comment:', err);
+    msgEl.className = 'form-message error';
+    msgEl.textContent = 'Could not submit. Please check your connection and try again.';
+    btn.disabled = false;
+    btn.textContent = 'Submit Reflection';
+  }
+});
+
+// ── Initialize ──
+buildCategorySections();
+
+if (firebaseReady) {
+  // Listen for real-time updates
+  commentsRef.on('value', (snapshot) => {
+    renderComments(snapshot);
+  }, (err) => {
+    console.error('Firebase read error:', err);
+    document.getElementById('commentsContainer').innerHTML =
+      '<div class="loading-comments">Could not load reflections. Please try again later.</div>';
+  });
+} else {
+  // Show setup message
+  document.getElementById('commentsContainer').innerHTML =
+    '<div class="loading-comments">Comments will appear here once Firebase is connected.</div>';
+  buildCategorySections();
+}
+</script>
+</body>
+</html>

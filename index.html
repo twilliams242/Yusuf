@@ -445,6 +445,16 @@ body {
   border-top: 2px solid var(--gold);
 }
 
+.comments-link {
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.comments-link:hover { color: var(--teal); }
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   :root { --border-width: 16px; }
@@ -514,6 +524,7 @@ body {
     <p>Quran text: Arabic (Uthmani script) &bull; English translation: Sahih International</p>
     <p>Bible text: Hebrew (Masoretic) &bull; English translation: JPS / Sefaria</p>
     <p style="margin-top: 8px;">Presented for study and reflection.</p>
+    <p style="margin-top: 12px;"><a href="comments.html" class="comments-link">&#x2726; Share Your Reflections &#x2726;</a></p>
   </footer>
 
 </div>
@@ -1107,16 +1118,19 @@ function updateHeader() {
 
 function updateFooter() {
   const footer = document.querySelector('.page-footer');
+  const reflLink = '<p style="margin-top: 12px;"><a href="comments.html" class="comments-link">&#x2726; Share Your Reflections &#x2726;</a></p>';
   if (currentLang === 'fa') {
     footer.innerHTML = `
       <p>Quran text: Arabic (Uthmani script) &bull; Persian translation: Makarem Shirazi</p>
       <p>Bible text: Hebrew (Masoretic) &bull; Persian translation: Farsi Contemporary Bible</p>
-      <p style="margin-top: 8px;">Presented for study and reflection.</p>`;
+      <p style="margin-top: 8px;">Presented for study and reflection.</p>
+      ${reflLink}`;
   } else {
     footer.innerHTML = `
       <p>Quran text: Arabic (Uthmani script) &bull; English translation: Sahih International</p>
       <p>Bible text: Hebrew (Masoretic) &bull; English translation: JPS / Sefaria</p>
-      <p style="margin-top: 8px;">Presented for study and reflection.</p>`;
+      <p style="margin-top: 8px;">Presented for study and reflection.</p>
+      ${reflLink}`;
   }
 }
 
