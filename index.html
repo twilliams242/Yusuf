@@ -339,6 +339,69 @@ body {
   font-style: italic;
 }
 
+.persian-text {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Amiri', serif;
+  font-size: 1.1rem;
+  line-height: 2.0;
+  color: #3a3a3a;
+}
+
+/* ── Language toggle ── */
+.lang-toggle {
+  text-align: center;
+  padding: 12px 20px 0;
+}
+
+.lang-toggle-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--verse-num);
+  font-family: sans-serif;
+  margin-bottom: 6px;
+}
+
+.lang-toggle-btns {
+  display: inline-flex;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.lang-toggle-btns button {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 0.9rem;
+  padding: 5px 18px;
+  border: none;
+  background: transparent;
+  color: var(--deep-blue);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.lang-toggle-btns button + button {
+  border-left: 1px solid var(--gold);
+}
+
+.lang-toggle-btns button.active-lang {
+  background: var(--gold);
+  color: white;
+}
+
+.lang-toggle-btns button:hover:not(.active-lang) {
+  background: var(--gold-light);
+}
+
+.lang-loading {
+  text-align: center;
+  padding: 8px;
+  font-size: 0.8rem;
+  color: var(--verse-num);
+  font-style: italic;
+}
+
 .no-text-note {
   text-align: center;
   color: var(--verse-num);
@@ -429,6 +492,13 @@ body {
     <div class="subtitle" style="font-size: 0.9rem; margin-top: 4px;">
       Surah Yusuf (Quran 12) &bull; Genesis 37&ndash;50
     </div>
+    <div class="lang-toggle">
+      <div class="lang-toggle-label">Translation Language</div>
+      <div class="lang-toggle-btns" id="langToggle">
+        <button class="active-lang" data-lang="en">English</button>
+        <button data-lang="fa">فارسی (Persian)</button>
+      </div>
+    </div>
   </header>
 
   <nav class="toc" id="toc"></nav>
@@ -449,11 +519,40 @@ body {
 </div>
 
 <script>
+// ── Internationalization ──
+const I18N = {
+  en: {
+    mainTitle: 'The Story of Yusuf',
+    subtitle: 'A Parallel Reading from the Quran &amp; the Bible',
+    sourceRef: 'Surah Yusuf (Quran 12) &bull; Genesis 37&ndash;50',
+    translationLabel: 'Translation Language',
+    quranOnly: 'Quran Only',
+    bibleOnly: 'Bible Only',
+    parallel: 'Parallel',
+    quranColTitle: 'Quran — سورة يوسف',
+    bibleColTitle: 'Bible — בראשית',
+    loading: 'Loading sacred texts&hellip;',
+  },
+  fa: {
+    mainTitle: 'داستان یوسف',
+    subtitle: 'خوانش موازی از قرآن و کتاب مقدس',
+    sourceRef: 'سوره یوسف (قرآن ۱۲) &bull; پیدایش ۳۷&ndash;۵۰',
+    translationLabel: 'زبان ترجمه',
+    quranOnly: 'فقط قرآن',
+    bibleOnly: 'فقط کتاب مقدس',
+    parallel: 'موازی',
+    quranColTitle: 'قرآن — سورة يوسف',
+    bibleColTitle: 'کتاب مقدس — בראשית',
+    loading: 'در حال بارگذاری ترجمه‌های فارسی&hellip;',
+  }
+};
+
 // ── Section definitions ──
 const SECTIONS = [
   {
     id: 'prologue',
     title: 'Prologue',
+    titleFa: 'مقدمه',
     quranRef: 'Quran 12:1–3',
     bibleRef: null,
     quranVerses: [1, 3],
@@ -463,6 +562,7 @@ const SECTIONS = [
   {
     id: 'the-dream',
     title: 'The Dream',
+    titleFa: 'رؤیا',
     quranRef: 'Quran 12:4–6',
     bibleRef: 'Genesis 37:1–11',
     quranVerses: [4, 6],
@@ -472,6 +572,7 @@ const SECTIONS = [
   {
     id: 'brothers-plot',
     title: "The Brothers' Plot",
+    titleFa: 'توطئه برادران',
     quranRef: 'Quran 12:7–10',
     bibleRef: 'Genesis 37:12–20',
     quranVerses: [7, 10],
@@ -481,6 +582,7 @@ const SECTIONS = [
   {
     id: 'into-the-well',
     title: 'Into the Well',
+    titleFa: 'در چاه',
     quranRef: 'Quran 12:11–18',
     bibleRef: 'Genesis 37:21–36',
     quranVerses: [11, 18],
@@ -490,6 +592,7 @@ const SECTIONS = [
   {
     id: 'judah-tamar',
     title: 'Judah and Tamar',
+    titleFa: 'یهودا و تامار',
     quranRef: null,
     bibleRef: 'Genesis 38:1–30',
     quranVerses: null,
@@ -499,6 +602,7 @@ const SECTIONS = [
   {
     id: 'masters-house',
     title: "Life in the Master's House",
+    titleFa: 'زندگی در خانه سرور',
     quranRef: 'Quran 12:19–22',
     bibleRef: 'Genesis 39:1–6',
     quranVerses: [19, 22],
@@ -508,6 +612,7 @@ const SECTIONS = [
   {
     id: 'the-seduction',
     title: 'The Seduction',
+    titleFa: 'اغوا',
     quranRef: 'Quran 12:23–34',
     bibleRef: 'Genesis 39:7–20',
     quranVerses: [23, 34],
@@ -517,6 +622,7 @@ const SECTIONS = [
   {
     id: 'imprisonment-dreams',
     title: 'Imprisonment &amp; Dreams',
+    titleFa: 'زندان و رؤیاها',
     quranRef: 'Quran 12:35–42',
     bibleRef: 'Genesis 39:21–40:23',
     quranVerses: [35, 42],
@@ -526,6 +632,7 @@ const SECTIONS = [
   {
     id: 'royal-dream-power',
     title: 'The Royal Dream &amp; Rise to Power',
+    titleFa: 'رؤیای پادشاه و به قدرت رسیدن',
     quranRef: 'Quran 12:43–57',
     bibleRef: 'Genesis 41:1–57',
     quranVerses: [43, 57],
@@ -535,6 +642,7 @@ const SECTIONS = [
   {
     id: 'first-visit',
     title: "Brothers' First Visit",
+    titleFa: 'نخستین سفر برادران',
     quranRef: 'Quran 12:58–62',
     bibleRef: 'Genesis 42:1–38',
     quranVerses: [58, 62],
@@ -544,6 +652,7 @@ const SECTIONS = [
   {
     id: 'return-cup',
     title: "Brothers' Return &amp; the Cup",
+    titleFa: 'بازگشت برادران و جام',
     quranRef: 'Quran 12:63–79',
     bibleRef: 'Genesis 43:1–44:34',
     quranVerses: [63, 79],
@@ -553,6 +662,7 @@ const SECTIONS = [
   {
     id: 'fathers-grief',
     title: "A Father's Grief",
+    titleFa: 'اندوه پدر',
     quranRef: 'Quran 12:80–87',
     bibleRef: 'Genesis 42:36–38; 43:14',
     quranVerses: [80, 87],
@@ -562,6 +672,7 @@ const SECTIONS = [
   {
     id: 'revelation-reunion',
     title: 'The Revelation &amp; Reunion',
+    titleFa: 'آشکار شدن و دیدار',
     quranRef: 'Quran 12:88–101',
     bibleRef: 'Genesis 45:1–47:12',
     quranVerses: [88, 101],
@@ -571,6 +682,7 @@ const SECTIONS = [
   {
     id: 'settlement-blessings',
     title: 'Settlement &amp; Blessings',
+    titleFa: 'سکونت و برکات',
     quranRef: null,
     bibleRef: 'Genesis 47:13–50:14',
     quranVerses: null,
@@ -580,6 +692,7 @@ const SECTIONS = [
   {
     id: 'final-forgiveness',
     title: 'Final Forgiveness &amp; Death',
+    titleFa: 'بخشش نهایی و وفات',
     quranRef: null,
     bibleRef: 'Genesis 50:15–26',
     quranVerses: null,
@@ -589,6 +702,7 @@ const SECTIONS = [
   {
     id: 'epilogue',
     title: 'Epilogue',
+    titleFa: 'خاتمه',
     quranRef: 'Quran 12:102–111',
     bibleRef: null,
     quranVerses: [102, 111],
@@ -601,6 +715,10 @@ const SECTIONS = [
 let quranArabic = [];   // array of {numberInSurah, text}
 let quranEnglish = [];
 let bibleData = {};     // keyed by chapter number: {he: [...], text: [...]}
+let quranPersian = [];  // Persian Quran translation (lazy-loaded)
+let biblePersianData = {}; // keyed by chapter number: [{verse, text}]
+let persianLoaded = false;
+let currentLang = 'en';
 
 // ── API fetching ──
 
@@ -631,6 +749,34 @@ async function fetchBible() {
   const chapters = [];
   for (let ch = 37; ch <= 50; ch++) chapters.push(ch);
   await Promise.all(chapters.map(ch => fetchBibleChapter(ch)));
+}
+
+// ── Persian fetching (lazy) ──
+
+async function fetchQuranPersian() {
+  const res = await fetch('https://api.alquran.cloud/v1/surah/12/fa.makarem');
+  if (!res.ok) throw new Error('Failed to fetch Quran Persian text');
+  const data = await res.json();
+  quranPersian = data.data.ayahs;
+}
+
+async function fetchBiblePersianChapter(ch) {
+  const res = await fetch(`https://bolls.life/get-text/FACB/1/${ch}/`);
+  if (!res.ok) throw new Error(`Failed to fetch Genesis ${ch} in Persian`);
+  const data = await res.json();
+  biblePersianData[ch] = data; // array of {pk, verse, text}
+}
+
+async function fetchBiblePersian() {
+  const chapters = [];
+  for (let ch = 37; ch <= 50; ch++) chapters.push(ch);
+  await Promise.all(chapters.map(ch => fetchBiblePersianChapter(ch)));
+}
+
+async function loadPersian() {
+  if (persianLoaded) return;
+  await Promise.all([fetchQuranPersian(), fetchBiblePersian()]);
+  persianLoaded = true;
 }
 
 // ── Rendering helpers ──
@@ -667,8 +813,10 @@ function processEnglishBible(str) {
 
 function getQuranVerses(from, to) {
   const arabic = quranArabic.filter(a => a.numberInSurah >= from && a.numberInSurah <= to);
-  const english = quranEnglish.filter(a => a.numberInSurah >= from && a.numberInSurah <= to);
-  return { arabic, english };
+  const translation = currentLang === 'fa'
+    ? quranPersian.filter(a => a.numberInSurah >= from && a.numberInSurah <= to)
+    : quranEnglish.filter(a => a.numberInSurah >= from && a.numberInSurah <= to);
+  return { arabic, translation };
 }
 
 function getBibleVerses(chaptersSpec) {
@@ -680,10 +828,20 @@ function getBibleVerses(chaptersSpec) {
     for (let v = spec.from; v <= spec.to; v++) {
       const idx = v - 1; // 0-indexed
       if (idx >= 0 && idx < chData.he.length) {
+        let translationText = '';
+        if (currentLang === 'fa') {
+          const persianCh = biblePersianData[spec.ch];
+          if (persianCh) {
+            const persianVerse = persianCh.find(pv => pv.verse === v);
+            translationText = persianVerse ? persianVerse.text : '';
+          }
+        } else {
+          translationText = processEnglishBible(chData.text[idx] || '');
+        }
         result.push({
           ref: `${spec.ch}:${v}`,
           he: stripHtml(chData.he[idx] || ''),
-          en: processEnglishBible(chData.text[idx] || '')
+          translation: translationText
         });
       }
     }
@@ -692,7 +850,7 @@ function getBibleVerses(chaptersSpec) {
 }
 
 function renderQuranBlock(from, to) {
-  const { arabic, english } = getQuranVerses(from, to);
+  const { arabic, translation } = getQuranVerses(from, to);
 
   let arHtml = '<div class="text-label">Arabic</div><div class="original-text arabic-text">';
   for (const a of arabic) {
@@ -700,13 +858,22 @@ function renderQuranBlock(from, to) {
   }
   arHtml += '</div>';
 
-  let enHtml = '<div class="text-label">English (Sahih International)</div><div class="english-text">';
-  for (const e of english) {
-    enHtml += `<span class="verse"><span class="verse-num">${e.numberInSurah}</span> ${e.text} </span>`;
-  }
-  enHtml += '</div>';
+  const isFa = currentLang === 'fa';
+  const label = isFa ? 'فارسی (Makarem Shirazi)' : 'English (Sahih International)';
+  const textClass = isFa ? 'persian-text' : 'english-text';
+  const numClass = isFa ? 'rtl-verse-num' : 'verse-num';
 
-  return arHtml + enHtml;
+  let trHtml = `<div class="text-label">${label}</div><div class="${textClass}">`;
+  for (const t of translation) {
+    if (isFa) {
+      trHtml += `<span class="verse"><span class="rtl-verse-num">﴿${t.numberInSurah}﴾</span> ${t.text} </span>`;
+    } else {
+      trHtml += `<span class="verse"><span class="verse-num">${t.numberInSurah}</span> ${t.text} </span>`;
+    }
+  }
+  trHtml += '</div>';
+
+  return arHtml + trHtml;
 }
 
 function renderBibleBlock(chaptersSpec) {
@@ -718,46 +885,62 @@ function renderBibleBlock(chaptersSpec) {
   }
   heHtml += '</div>';
 
-  let enHtml = '<div class="text-label">English</div><div class="english-text">';
-  for (const v of verses) {
-    enHtml += `<span class="verse"><span class="verse-num">${v.ref}</span> ${v.en} </span>`;
-  }
-  enHtml += '</div>';
+  const isFa = currentLang === 'fa';
+  const label = isFa ? 'فارسی (Farsi Contemporary Bible)' : 'English';
+  const textClass = isFa ? 'persian-text' : 'english-text';
 
-  return heHtml + enHtml;
+  let trHtml = `<div class="text-label">${label}</div><div class="${textClass}">`;
+  for (const v of verses) {
+    if (isFa) {
+      trHtml += `<span class="verse"><span class="rtl-verse-num">(${v.ref})</span> ${v.translation} </span>`;
+    } else {
+      trHtml += `<span class="verse"><span class="verse-num">${v.ref}</span> ${v.translation} </span>`;
+    }
+  }
+  trHtml += '</div>';
+
+  return heHtml + trHtml;
 }
 
 // ── Build page ──
 
 function buildTOC() {
   const toc = document.getElementById('toc');
+  const t = I18N[currentLang];
+  const isFa = currentLang === 'fa';
   const legend = `<div class="toc-legend">
-    <span><span class="legend-swatch swatch-parallel"></span>Parallel</span>
-    <span><span class="legend-swatch swatch-quran"></span>Quran Only</span>
-    <span><span class="legend-swatch swatch-bible"></span>Bible Only</span>
+    <span><span class="legend-swatch swatch-parallel"></span>${t.parallel}</span>
+    <span><span class="legend-swatch swatch-quran"></span>${t.quranOnly}</span>
+    <span><span class="legend-swatch swatch-bible"></span>${t.bibleOnly}</span>
   </div>`;
   const links = SECTIONS.map(s => {
     const cls = s.type === 'quran-only' ? 'quran-only' : s.type === 'bible-only' ? 'bible-only' : 'parallel';
-    return `<a href="#${s.id}" class="${cls}">${s.title}</a>`;
+    const title = isFa ? s.titleFa : s.title;
+    return `<a href="#${s.id}" class="${cls}">${title}</a>`;
   }).join('');
   toc.innerHTML = legend + links;
+  if (isFa) toc.setAttribute('dir', 'rtl');
+  else toc.removeAttribute('dir');
 }
 
 function buildSections() {
   const content = document.getElementById('content');
+  const t = I18N[currentLang];
+  const isFa = currentLang === 'fa';
   let html = '';
 
   for (const s of SECTIONS) {
+    const sectionTitle = isFa ? s.titleFa : s.title;
     html += `<section class="section" id="${s.id}">`;
-    html += `<div class="section-header">`;
+    html += `<div class="section-header"${isFa ? ' dir="rtl"' : ''}>`;
 
     if (s.type === 'quran-only') {
-      html += `<span class="section-badge quran-only-badge">Quran Only</span>`;
+      html += `<span class="section-badge quran-only-badge">${t.quranOnly}</span>`;
     } else if (s.type === 'bible-only') {
-      html += `<span class="section-badge bible-only-badge">Bible Only</span>`;
+      html += `<span class="section-badge bible-only-badge">${t.bibleOnly}</span>`;
     }
 
-    html += `<h2>${s.title}</h2>`;
+    html += `<h2>${sectionTitle}</h2>`;
 
     const refs = [];
     if (s.quranRef) refs.push(s.quranRef);
@@ -768,22 +951,22 @@ function buildSections() {
     if (s.type === 'parallel') {
       html += `<div class="parallel-columns">`;
       html += `<div class="column quran-col">`;
-      html += `<div class="column-title">Quran — سورة يوسف</div>`;
+      html += `<div class="column-title">${t.quranColTitle}</div>`;
       html += renderQuranBlock(s.quranVerses[0], s.quranVerses[1]);
       html += `</div>`;
       html += `<div class="column bible-col">`;
-      html += `<div class="column-title">Bible — בראשית</div>`;
+      html += `<div class="column-title">${t.bibleColTitle}</div>`;
       html += renderBibleBlock(s.bibleChapters);
       html += `</div>`;
       html += `</div>`;
     } else if (s.type === 'quran-only') {
       html += `<div class="single-source quran-col">`;
-      html += `<div class="column-title">Quran — سورة يوسف</div>`;
+      html += `<div class="column-title">${t.quranColTitle}</div>`;
       html += renderQuranBlock(s.quranVerses[0], s.quranVerses[1]);
       html += `</div>`;
     } else if (s.type === 'bible-only') {
       html += `<div class="single-source bible-col">`;
-      html += `<div class="column-title">Bible — בראשית</div>`;
+      html += `<div class="column-title">${t.bibleColTitle}</div>`;
       html += renderBibleBlock(s.bibleChapters);
       html += `</div>`;
     }
@@ -843,8 +1026,107 @@ function setupActiveTracking() {
   sections.forEach(sec => observer.observe(sec));
 }
 
+async function switchLanguage(lang) {
+  if (lang === currentLang) return;
+  currentLang = lang;
+
+  // Update toggle button styles
+  document.querySelectorAll('#langToggle button').forEach(btn => {
+    btn.classList.toggle('active-lang', btn.dataset.lang === lang);
+  });
+
+  // If Persian selected and not yet loaded, fetch it
+  if (lang === 'fa' && !persianLoaded) {
+    document.getElementById('content').innerHTML = `
+      <div class="loading">
+        <div class="spinner"></div>
+        <div>Loading Persian translations&hellip;</div>
+      </div>`;
+    try {
+      await loadPersian();
+    } catch (err) {
+      console.error('Error loading Persian:', err);
+      document.getElementById('content').innerHTML = `
+        <div class="error-msg">
+          <p>Unable to load Persian translations. Please try again.</p>
+          <p style="font-size: 0.8rem; margin-top: 8px;">${err.message}</p>
+        </div>`;
+      // Revert to English
+      currentLang = 'en';
+      document.querySelectorAll('#langToggle button').forEach(btn => {
+        btn.classList.toggle('active-lang', btn.dataset.lang === 'en');
+      });
+      return;
+    }
+  }
+
+  // Remember scroll position (by section id)
+  const sections = document.querySelectorAll('.section');
+  let currentSectionId = null;
+  for (const sec of sections) {
+    const rect = sec.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      currentSectionId = sec.id;
+      break;
+    }
+  }
+
+  // Update header
+  updateHeader();
+
+  // Re-render
+  buildTOC();
+  buildSections();
+  setupActiveTracking();
+
+  // Restore scroll position
+  if (currentSectionId) {
+    const el = document.getElementById(currentSectionId);
+    if (el) el.scrollIntoView({ behavior: 'instant' });
+  }
+
+  // Update footer
+  updateFooter();
+}
+
+function updateHeader() {
+  const t = I18N[currentLang];
+  const isFa = currentLang === 'fa';
+  const h1 = document.querySelector('.page-header h1');
+  h1.innerHTML = `<span class="arabic-title">قصة يوسف</span>${t.mainTitle}`;
+  if (isFa) h1.style.direction = 'rtl';
+  else h1.style.direction = '';
+
+  const subtitles = document.querySelectorAll('.page-header .subtitle');
+  if (subtitles[0]) subtitles[0].innerHTML = t.subtitle;
+  if (subtitles[1]) subtitles[1].innerHTML = t.sourceRef;
+
+  const langLabel = document.querySelector('.lang-toggle-label');
+  if (langLabel) langLabel.textContent = t.translationLabel;
+}
+
+function updateFooter() {
+  const footer = document.querySelector('.page-footer');
+  if (currentLang === 'fa') {
+    footer.innerHTML = `
+      <p>Quran text: Arabic (Uthmani script) &bull; Persian translation: Makarem Shirazi</p>
+      <p>Bible text: Hebrew (Masoretic) &bull; Persian translation: Farsi Contemporary Bible</p>
+      <p style="margin-top: 8px;">Presented for study and reflection.</p>`;
+  } else {
+    footer.innerHTML = `
+      <p>Quran text: Arabic (Uthmani script) &bull; English translation: Sahih International</p>
+      <p>Bible text: Hebrew (Masoretic) &bull; English translation: JPS / Sefaria</p>
+      <p style="margin-top: 8px;">Presented for study and reflection.</p>`;
+  }
+}
+
 async function init() {
   buildTOC();
+
+  // Set up language toggle
+  document.querySelectorAll('#langToggle button').forEach(btn => {
+    btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
+  });
 
   try {
     // Fetch both sources in parallel
