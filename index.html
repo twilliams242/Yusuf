@@ -333,6 +333,12 @@ body {
   font-family: sans-serif;
 }
 
+.inline-footnote {
+  font-size: 0.82em;
+  color: #7a6f5f;
+  font-style: italic;
+}
+
 .no-text-note {
   text-align: center;
   color: var(--verse-num);
@@ -631,8 +637,32 @@ async function fetchBible() {
 
 function stripHtml(str) {
   if (!str) return '';
-  // Remove HTML tags that Sefaria sometimes includes
+  // Remove all HTML tags
   return str.replace(/<[^>]*>/g, '');
+}
+
+function processEnglishBible(str) {
+  if (!str) return '';
+  let result = str;
+  // Remove the superscript footnote-marker letter
+  result = result.replace(/<sup[^>]*class="footnote-marker"[^>]*>[^<]*<\/sup>/g, '');
+  // Convert <i class="footnote">...</i> to a placeholder we can protect
+  const footnotes = [];
+  result = result.replace(/<i[^>]*class="footnote"[^>]*>(.*?)<\/i>/g, (match, content) => {
+    const cleanContent = content.replace(/<[^>]*>/g, '').trim();
+    const placeholder = `%%FN${footnotes.length}%%`;
+    footnotes.push(cleanContent);
+    return placeholder;
+  });
+  // Convert <br> to space
+  result = result.replace(/<br\s*\/?>/g, ' ');
+  // Strip any remaining HTML tags (links, etc)
+  result = result.replace(/<[^>]*>/g, '');
+  // Restore footnotes as styled spans
+  footnotes.forEach((fn, i) => {
+    result = result.replace(`%%FN${i}%%`, `<span class="inline-footnote"> [${fn}]</span>`);
+  });
+  return result;
 }
 
 function getQuranVerses(from, to) {
@@ -653,7 +683,7 @@ function getBibleVerses(chaptersSpec) {
         result.push({
           ref: `${spec.ch}:${v}`,
           he: stripHtml(chData.he[idx] || ''),
-          en: stripHtml(chData.text[idx] || '')
+          en: processEnglishBible(chData.text[idx] || '')
         });
       }
     }
