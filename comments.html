@@ -215,6 +215,27 @@ body {
 .form-message.success { color: var(--teal); }
 .form-message.error { color: #a04040; }
 
+/* ── Private message checkbox ── */
+.private-check-row {
+  margin-bottom: 16px;
+}
+.private-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--verse-num);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.private-label input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
 /* ── Category Sections ── */
 .comments-display {
   padding: 10px 30px 40px;
@@ -392,6 +413,16 @@ body {
         <label for="commentInput">Your Reflection</label>
         <textarea id="commentInput" maxlength="500" placeholder="Share your thoughts..." required></textarea>
       </div>
+      <div class="form-row private-check-row">
+        <label class="private-label">
+          <input type="checkbox" id="privateCheck">
+          <span>Send privately to the site creator (not posted publicly)</span>
+        </label>
+      </div>
+      <div class="form-row" id="replyEmailRow" style="display: none;">
+        <label for="replyEmail">Your Email (optional — if you'd like a reply)</label>
+        <input type="email" id="replyEmail" maxlength="100" placeholder="e.g. name@example.com">
+      </div>
       <button type="submit" class="submit-btn" id="submitBtn">Submit Reflection</button>
       <div id="formMessage" class="form-message"></div>
     </form>
@@ -413,6 +444,9 @@ body {
 <!-- Firebase SDK (compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <script>
 // ── Firebase Configuration ──
@@ -443,6 +477,22 @@ if (firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('YOUR_'))
   }
 } else {
   console.info('Firebase not configured yet. Replace placeholder values in comments.html.');
+}
+
+// ── EmailJS Configuration ──
+// Replace these after creating an EmailJS account at https://www.emailjs.com
+const EMAILJS_PUBLIC_KEY = 'lhj_EjimaMfRct6Er';
+const EMAILJS_SERVICE_ID = 'service_1inc2xk';
+const EMAILJS_TEMPLATE_ID = 'template_4hp2w6k';
+let emailjsReady = false;
+
+if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+  try {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    emailjsReady = true;
+  } catch (err) {
+    console.warn('EmailJS initialization error:', err.message);
+  }
 }
 
 // ── Category Definitions ──
@@ -578,39 +628,92 @@ document.getElementById('commentForm').addEventListener('submit', async (e) => {
     return;
   }
 
-  if (!firebaseReady) {
-    msgEl.className = 'form-message error';
-    msgEl.textContent = 'Comments are not yet connected. Firebase setup is required.';
-    return;
-  }
+  const isPrivate = document.getElementById('privateCheck').checked;
 
   btn.disabled = true;
   btn.textContent = 'Submitting...';
   msgEl.textContent = '';
 
-  try {
-    await commentsRef.push({
-      name: name,
-      text: text,
-      category: category,
-      timestamp: Date.now()
-    });
+  if (isPrivate) {
+    // Send via EmailJS (not saved publicly)
+    if (!emailjsReady) {
+      msgEl.className = 'form-message error';
+      msgEl.textContent = 'Private messaging is not yet configured.';
+      btn.disabled = false;
+      btn.textContent = 'Send Private Message';
+      return;
+    }
 
-    lastSubmitTime = Date.now();
-    document.getElementById('commentInput').value = '';
-    msgEl.className = 'form-message success';
-    msgEl.textContent = 'Thank you for sharing your reflection!';
-    btn.disabled = false;
-    btn.textContent = 'Submit Reflection';
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name: name,
+        message: text,
+        reply_email: document.getElementById('replyEmail').value.trim() || 'Not provided'
+      });
 
-    // Clear success message after 4s
-    setTimeout(() => { msgEl.textContent = ''; }, 4000);
-  } catch (err) {
-    console.error('Error submitting comment:', err);
-    msgEl.className = 'form-message error';
-    msgEl.textContent = 'Could not submit. Please check your connection and try again.';
-    btn.disabled = false;
+      lastSubmitTime = Date.now();
+      document.getElementById('commentInput').value = '';
+      document.getElementById('replyEmail').value = '';
+      msgEl.className = 'form-message success';
+      msgEl.textContent = 'Your private message has been sent. Thank you!';
+      btn.disabled = false;
+      btn.textContent = 'Send Private Message';
+      setTimeout(() => { msgEl.textContent = ''; }, 4000);
+    } catch (err) {
+      console.error('Error sending private message:', err);
+      msgEl.className = 'form-message error';
+      msgEl.textContent = 'Could not send message. Please try again later.';
+      btn.disabled = false;
+      btn.textContent = 'Send Private Message';
+    }
+  } else {
+    // Save publicly to Firebase
+    if (!firebaseReady) {
+      msgEl.className = 'form-message error';
+      msgEl.textContent = 'Comments are not yet connected. Firebase setup is required.';
+      btn.disabled = false;
+      btn.textContent = 'Submit Reflection';
+      return;
+    }
+
+    try {
+      await commentsRef.push({
+        name: name,
+        text: text,
+        category: category,
+        timestamp: Date.now()
+      });
+
+      lastSubmitTime = Date.now();
+      document.getElementById('commentInput').value = '';
+      msgEl.className = 'form-message success';
+      msgEl.textContent = 'Thank you for sharing your reflection!';
+      btn.disabled = false;
+      btn.textContent = 'Submit Reflection';
+      setTimeout(() => { msgEl.textContent = ''; }, 4000);
+    } catch (err) {
+      console.error('Error submitting comment:', err);
+      msgEl.className = 'form-message error';
+      msgEl.textContent = 'Could not submit. Please check your connection and try again.';
+      btn.disabled = false;
+      btn.textContent = 'Submit Reflection';
+    }
+  }
+});
+
+// ── Toggle private mode UI ──
+document.getElementById('privateCheck').addEventListener('change', function() {
+  const btn = document.getElementById('submitBtn');
+  const catRow = document.getElementById('categorySelect').closest('.form-row');
+  const emailRow = document.getElementById('replyEmailRow');
+  if (this.checked) {
+    btn.textContent = 'Send Private Message';
+    catRow.style.display = 'none';
+    emailRow.style.display = '';
+  } else {
     btn.textContent = 'Submit Reflection';
+    catRow.style.display = '';
+    emailRow.style.display = 'none';
   }
 });
 
