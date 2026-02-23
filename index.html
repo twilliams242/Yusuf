@@ -601,16 +601,6 @@ const SECTIONS = [
     type: 'parallel'
   },
   {
-    id: 'judah-tamar',
-    title: 'Judah and Tamar',
-    titleFa: 'یهودا و تامار',
-    quranRef: null,
-    bibleRef: 'Genesis 38:1–30',
-    quranVerses: null,
-    bibleChapters: [{ch: 38, from: 1, to: 30}],
-    type: 'bible-only'
-  },
-  {
     id: 'masters-house',
     title: "Life in the Master's House",
     titleFa: 'زندگی در خانه سرور',
@@ -625,9 +615,9 @@ const SECTIONS = [
     title: 'The Seduction',
     titleFa: 'اغوا',
     quranRef: 'Quran 12:23–34',
-    bibleRef: 'Genesis 39:7–20',
+    bibleRef: 'Genesis 39:7–19',
     quranVerses: [23, 34],
-    bibleChapters: [{ch: 39, from: 7, to: 20}],
+    bibleChapters: [{ch: 39, from: 7, to: 19}],
     type: 'parallel'
   },
   {
@@ -635,9 +625,9 @@ const SECTIONS = [
     title: 'Imprisonment &amp; Dreams',
     titleFa: 'زندان و رؤیاها',
     quranRef: 'Quran 12:35–42',
-    bibleRef: 'Genesis 39:21–40:23',
+    bibleRef: 'Genesis 39:20–40:23',
     quranVerses: [35, 42],
-    bibleChapters: [{ch: 39, from: 21, to: 23}, {ch: 40, from: 1, to: 23}],
+    bibleChapters: [{ch: 39, from: 20, to: 23}, {ch: 40, from: 1, to: 23}],
     type: 'parallel'
   },
   {
@@ -803,14 +793,54 @@ function processEnglishBible(str) {
   let result = str;
   // Remove the superscript footnote-marker letter
   result = result.replace(/<sup[^>]*class="footnote-marker"[^>]*>[^<]*<\/sup>/g, '');
-  // Convert <i class="footnote">...</i> to a placeholder we can protect
+  // Extract <i class="footnote">...</i> handling nested <i> tags inside footnotes
   const footnotes = [];
-  result = result.replace(/<i[^>]*class="footnote"[^>]*>(.*?)<\/i>/g, (match, content) => {
-    const cleanContent = content.replace(/<[^>]*>/g, '').trim();
-    const placeholder = `%%FN${footnotes.length}%%`;
-    footnotes.push(cleanContent);
-    return placeholder;
-  });
+  let processed = '';
+  let idx = 0;
+  while (idx < result.length) {
+    const fnStart = result.indexOf('<i', idx);
+    // Check if this <i> tag has class="footnote"
+    if (fnStart === -1) { processed += result.substring(idx); break; }
+    const tagEnd = result.indexOf('>', fnStart);
+    if (tagEnd === -1) { processed += result.substring(idx); break; }
+    const tag = result.substring(fnStart, tagEnd + 1);
+    if (!tag.includes('class="footnote"')) {
+      processed += result.substring(idx, tagEnd + 1);
+      idx = tagEnd + 1;
+      continue;
+    }
+    // Found a footnote <i> — now find the matching outer </i>
+    processed += result.substring(idx, fnStart);
+    let depth = 1;
+    let pos = tagEnd + 1;
+    while (depth > 0 && pos < result.length) {
+      const nextOpen = result.indexOf('<i', pos);
+      const nextClose = result.indexOf('</i>', pos);
+      if (nextClose === -1) break;
+      if (nextOpen !== -1 && nextOpen < nextClose) {
+        // Check it's actually an <i> tag not <img> etc
+        const nextTagEnd = result.indexOf('>', nextOpen);
+        if (nextTagEnd !== -1 && result.substring(nextOpen, nextTagEnd + 1).match(/^<i[\s>]/)) {
+          depth++;
+        }
+        pos = nextOpen + 2;
+      } else {
+        depth--;
+        if (depth === 0) {
+          const content = result.substring(tagEnd + 1, nextClose);
+          const cleanContent = content.replace(/<[^>]*>/g, '').trim();
+          const placeholder = `%%FN${footnotes.length}%%`;
+          footnotes.push(cleanContent);
+          processed += placeholder;
+          pos = nextClose + 4; // skip past </i>
+        } else {
+          pos = nextClose + 4;
+        }
+      }
+    }
+    idx = pos;
+  }
+  result = processed;
   // Convert <br> to space
   result = result.replace(/<br\s*\/?>/g, ' ');
   // Strip any remaining HTML tags (links, etc)
