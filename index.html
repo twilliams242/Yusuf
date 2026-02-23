@@ -1149,19 +1149,18 @@ function updateHeader() {
 
 function updateFooter() {
   const footer = document.querySelector('.page-footer');
-  const reflLink = '<p style="margin-top: 12px;"><a href="comments.html" class="comments-link">&#x2726; Share Your Reflections &#x2726;</a></p>';
   if (currentLang === 'fa') {
     footer.innerHTML = `
-      <p>Quran text: Arabic (Uthmani script) &bull; Persian translation: Makarem Shirazi</p>
-      <p>Bible text: Hebrew (Masoretic) &bull; Persian translation: Farsi Contemporary Bible</p>
-      <p style="margin-top: 8px;">Presented for study and reflection.</p>
-      ${reflLink}`;
+      <p>&#x0645;&#x062A;&#x0646; &#x0642;&#x0631;&#x0622;&#x0646;: &#x0639;&#x0631;&#x0628;&#x06CC; (&#x062E;&#x0637; &#x0639;&#x062B;&#x0645;&#x0627;&#x0646;&#x06CC;) &bull; &#x062A;&#x0631;&#x062C;&#x0645;&#x0647; &#x0641;&#x0627;&#x0631;&#x0633;&#x06CC;: &#x0645;&#x06A9;&#x0627;&#x0631;&#x0645; &#x0634;&#x06CC;&#x0631;&#x0627;&#x0632;&#x06CC;</p>
+      <p>&#x0645;&#x062A;&#x0646; &#x06A9;&#x062A;&#x0627;&#x0628; &#x0645;&#x0642;&#x062F;&#x0633;: &#x0639;&#x0628;&#x0631;&#x06CC; (&#x0645;&#x0627;&#x0632;&#x0648;&#x0631;&#x062A;&#x06CC;&#x06A9;) &bull; &#x062A;&#x0631;&#x062C;&#x0645;&#x0647; &#x0641;&#x0627;&#x0631;&#x0633;&#x06CC;: &#x06A9;&#x062A;&#x0627;&#x0628; &#x0645;&#x0642;&#x062F;&#x0633; &#x0645;&#x0639;&#x0627;&#x0635;&#x0631; &#x0641;&#x0627;&#x0631;&#x0633;&#x06CC;</p>
+      <p style="margin-top: 8px;">&#x0628;&#x0631;&#x0627;&#x06CC; &#x0645;&#x0637;&#x0627;&#x0644;&#x0639;&#x0647; &#x0648; &#x062A;&#x0627;&#x0645;&#x0644; &#x0627;&#x0631;&#x0627;&#x0626;&#x0647; &#x0634;&#x062F;&#x0647; &#x0627;&#x0633;&#x062A;.</p>
+      <p style="margin-top: 12px;"><a href="comments.html" class="comments-link">&#x2726; &#x062A;&#x0627;&#x0645;&#x0644;&#x0627;&#x062A; &#x062E;&#x0648;&#x062F; &#x0631;&#x0627; &#x0628;&#x0647; &#x0627;&#x0634;&#x062A;&#x0631;&#x0627;&#x06A9; &#x0628;&#x06AF;&#x0630;&#x0627;&#x0631;&#x06CC;&#x062F; &#x2726;</a></p>`;
   } else {
     footer.innerHTML = `
       <p>Quran text: Arabic (Uthmani script) &bull; English translation: Sahih International</p>
       <p>Bible text: Hebrew (Masoretic) &bull; English translation: JPS / Sefaria</p>
       <p style="margin-top: 8px;">Presented for study and reflection.</p>
-      ${reflLink}`;
+      <p style="margin-top: 12px;"><a href="comments.html" class="comments-link">&#x2726; Share Your Reflections &#x2726;</a></p>`;
   }
 }
 
