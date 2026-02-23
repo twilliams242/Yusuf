@@ -1070,6 +1070,7 @@ function setupActiveTracking() {
 async function switchLanguage(lang) {
   if (lang === currentLang) return;
   currentLang = lang;
+  localStorage.setItem('lang', lang);
 
   // Update toggle button styles
   document.querySelectorAll('#langToggle button').forEach(btn => {
@@ -1165,6 +1166,15 @@ function updateFooter() {
 }
 
 async function init() {
+  // Restore saved language preference
+  const savedLang = localStorage.getItem('lang');
+  if (savedLang === 'fa') {
+    currentLang = 'fa';
+    document.querySelectorAll('#langToggle button').forEach(btn => {
+      btn.classList.toggle('active-lang', btn.dataset.lang === 'fa');
+    });
+  }
+
   buildTOC();
 
   // Set up language toggle

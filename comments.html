@@ -107,6 +107,52 @@ body {
   user-select: none;
 }
 
+/* ── Language Toggle ── */
+.lang-toggle {
+  text-align: center;
+  padding: 12px 20px 0;
+}
+
+.lang-toggle-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--verse-num);
+  font-family: sans-serif;
+  margin-bottom: 6px;
+}
+
+.lang-toggle-btns {
+  display: inline-flex;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.lang-toggle-btns button {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 0.9rem;
+  padding: 5px 18px;
+  border: none;
+  background: transparent;
+  color: var(--deep-blue);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.lang-toggle-btns button + button {
+  border-left: 1px solid var(--gold);
+}
+
+.lang-toggle-btns button.active-lang {
+  background: var(--gold);
+  color: white;
+}
+
+.lang-toggle-btns button:hover:not(.active-lang) {
+  background: var(--gold-light);
+}
+
 /* ── Footer ── */
 .page-footer {
   text-align: center;
@@ -354,6 +400,40 @@ body {
   color: #3a3a3a;
 }
 
+/* ── Translation indicators ── */
+.translation-note {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--verse-num);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-original-btn {
+  background: none;
+  border: none;
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.toggle-original-btn:hover {
+  color: var(--teal);
+}
+
+.comment-translation-status {
+  display: block;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--verse-num);
+  margin-top: 4px;
+}
+
 /* ── Loading state ── */
 .loading-comments {
   text-align: center;
@@ -361,6 +441,18 @@ body {
   color: var(--verse-num);
   font-style: italic;
 }
+
+/* ── RTL adjustments ── */
+[dir="rtl"] .comment-meta { flex-direction: row-reverse; }
+[dir="rtl"] .category-header { flex-direction: row-reverse; }
+[dir="rtl"] .private-label { flex-direction: row-reverse; }
+[dir="rtl"] .category-count { margin-left: 0; margin-right: 8px; }
+[dir="rtl"] .form-row label { text-align: right; }
+[dir="rtl"] .form-row input,
+[dir="rtl"] .form-row textarea,
+[dir="rtl"] .form-row select { text-align: right; direction: rtl; }
+[dir="rtl"] .translation-note { flex-direction: row-reverse; }
+[dir="rtl"] .collapse-arrow { order: -1; }
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
@@ -386,22 +478,29 @@ body {
 <div class="page-wrapper">
 
   <header class="page-header">
-    <a href="index.html" class="back-link">&larr; Back to the Story</a>
-    <h1>Reflections</h1>
-    <div class="subtitle">Thoughts and reflections from readers of The Story of Yusuf</div>
+    <a href="index.html" class="back-link" id="backLink">&larr; Back to the Story</a>
+    <h1 id="pageTitle">Reflections</h1>
+    <div class="subtitle" id="pageSubtitle">Thoughts and reflections from readers of The Story of Yusuf</div>
     <div class="ornament">&#x2726; &#x2726; &#x2726;</div>
+    <div class="lang-toggle">
+      <div class="lang-toggle-label" id="langLabel">Translation Language</div>
+      <div class="lang-toggle-btns" id="langToggle">
+        <button class="active-lang" data-lang="en">English</button>
+        <button data-lang="fa">&#x0641;&#x0627;&#x0631;&#x0633;&#x06CC; (Persian)</button>
+      </div>
+    </div>
   </header>
 
   <!-- Comment Form -->
   <section class="comment-form-section">
-    <h2>Share Your Reflection</h2>
+    <h2 id="formTitle">Share Your Reflection</h2>
     <form id="commentForm" autocomplete="off">
       <div class="form-row">
-        <label for="nameInput">Your First Name</label>
+        <label for="nameInput" id="nameLabel">Your First Name</label>
         <input type="text" id="nameInput" maxlength="30" placeholder="e.g. Ahmad" required>
       </div>
-      <div class="form-row">
-        <label for="categorySelect">Category</label>
+      <div class="form-row" id="categoryRow">
+        <label for="categorySelect" id="categoryLabel">Category</label>
         <select id="categorySelect" required>
           <option value="positive">Positive Feedback</option>
           <option value="differences">Differences in the Stories</option>
@@ -410,17 +509,17 @@ body {
         </select>
       </div>
       <div class="form-row">
-        <label for="commentInput">Your Reflection</label>
+        <label for="commentInput" id="reflectionLabel">Your Reflection</label>
         <textarea id="commentInput" maxlength="500" placeholder="Share your thoughts..." required></textarea>
       </div>
       <div class="form-row private-check-row">
         <label class="private-label">
           <input type="checkbox" id="privateCheck">
-          <span>Send privately to the site creator (not posted publicly)</span>
+          <span id="privateLabel">Send privately to the site creator (not posted publicly)</span>
         </label>
       </div>
       <div class="form-row" id="replyEmailRow" style="display: none;">
-        <label for="replyEmail">Your Email (optional — if you'd like a reply)</label>
+        <label for="replyEmail" id="emailLabel">Your Email (optional — if you'd like a reply)</label>
         <input type="email" id="replyEmail" maxlength="100" placeholder="e.g. name@example.com">
       </div>
       <button type="submit" class="submit-btn" id="submitBtn">Submit Reflection</button>
@@ -436,7 +535,7 @@ body {
   </section>
 
   <footer class="page-footer">
-    <p><a href="index.html">&larr; Return to The Story of Yusuf</a></p>
+    <p><a href="index.html" id="footerLink">&larr; Return to The Story of Yusuf</a></p>
   </footer>
 
 </div>
@@ -480,7 +579,6 @@ if (firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes('YOUR_'))
 }
 
 // ── EmailJS Configuration ──
-// Replace these after creating an EmailJS account at https://www.emailjs.com
 const EMAILJS_PUBLIC_KEY = 'lhj_EjimaMfRct6Er';
 const EMAILJS_SERVICE_ID = 'service_1inc2xk';
 const EMAILJS_TEMPLATE_ID = 'template_4hp2w6k';
@@ -495,12 +593,120 @@ if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
   }
 }
 
+// ── Language State ──
+let currentLang = localStorage.getItem('lang') || 'en';
+let latestSnapshot = null;
+
+// ── I18N Translations ──
+const COMMENTS_I18N = {
+  en: {
+    backLink: '\u2190 Back to the Story',
+    pageTitle: 'Reflections',
+    pageSubtitle: 'Thoughts and reflections from readers of The Story of Yusuf',
+    translationLabel: 'Translation Language',
+    formTitle: 'Share Your Reflection',
+    nameLabel: 'Your First Name',
+    namePlaceholder: 'e.g. Ahmad',
+    categoryLabel: 'Category',
+    catPositive: 'Positive Feedback',
+    catDifferences: 'Differences in the Stories',
+    catInsights: 'Insights About Reality',
+    catOther: 'Other',
+    reflectionLabel: 'Your Reflection',
+    reflectionPlaceholder: 'Share your thoughts...',
+    privateLabel: 'Send privately to the site creator (not posted publicly)',
+    emailLabel: 'Your Email (optional \u2014 if you\'d like a reply)',
+    emailPlaceholder: 'e.g. name@example.com',
+    submitBtn: 'Submit Reflection',
+    submitPrivateBtn: 'Send Private Message',
+    submitting: 'Submitting...',
+    noReflections: 'No reflections yet in this category.',
+    loadingReflections: 'Loading reflections\u2026',
+    rateLimit: 'Please wait {wait} seconds before submitting again.',
+    missingFields: 'Please fill in your name and reflection.',
+    tooLong: 'Name must be under 30 characters and reflection under 500.',
+    privateNotConfigured: 'Private messaging is not yet configured.',
+    sendFailed: 'Could not send message. Please try again later.',
+    firebaseNotReady: 'Comments are not yet connected. Firebase setup is required.',
+    submitFailed: 'Could not submit. Please check your connection and try again.',
+    privateSent: 'Your private message has been sent. Thank you!',
+    publicSent: 'Thank you for sharing your reflection!',
+    loadFailed: 'Could not load reflections. Please try again later.',
+    footerLink: '\u2190 Return to The Story of Yusuf',
+    justNow: 'just now',
+    oneMinuteAgo: '1 minute ago',
+    minutesAgo: '{N} minutes ago',
+    oneHourAgo: '1 hour ago',
+    hoursAgo: '{N} hours ago',
+    yesterday: 'yesterday',
+    daysAgo: '{N} days ago',
+    oneMonthAgo: '1 month ago',
+    monthsAgo: '{N} months ago',
+    translatedFrom: 'Translated from English',
+    translatedFromFa: 'Translated from Persian',
+    showOriginal: 'Show original',
+    showTranslation: 'Show translation',
+    translating: 'Translating...',
+    translationFailed: 'Translation unavailable'
+  },
+  fa: {
+    backLink: '\u2190 \u0628\u0627\u0632\u06AF\u0634\u062A \u0628\u0647 \u062F\u0627\u0633\u062A\u0627\u0646',
+    pageTitle: '\u062A\u0627\u0645\u0644\u0627\u062A',
+    pageSubtitle: '\u0627\u0646\u062F\u06CC\u0634\u0647\u200C\u0647\u0627 \u0648 \u062A\u0627\u0645\u0644\u0627\u062A \u062E\u0648\u0627\u0646\u0646\u062F\u06AF\u0627\u0646 \u062F\u0627\u0633\u062A\u0627\u0646 \u06CC\u0648\u0633\u0641',
+    translationLabel: '\u0632\u0628\u0627\u0646 \u062A\u0631\u062C\u0645\u0647',
+    formTitle: '\u062A\u0627\u0645\u0644 \u062E\u0648\u062F \u0631\u0627 \u0628\u0647 \u0627\u0634\u062A\u0631\u0627\u06A9 \u0628\u06AF\u0630\u0627\u0631\u06CC\u062F',
+    nameLabel: '\u0646\u0627\u0645 \u06A9\u0648\u0686\u06A9 \u0634\u0645\u0627',
+    namePlaceholder: '\u0645\u062B\u0644\u0627 \u0627\u062D\u0645\u062F',
+    categoryLabel: '\u062F\u0633\u062A\u0647\u200C\u0628\u0646\u062F\u06CC',
+    catPositive: '\u0628\u0627\u0632\u062E\u0648\u0631\u062F \u0645\u062B\u0628\u062A',
+    catDifferences: '\u062A\u0641\u0627\u0648\u062A\u200C\u0647\u0627\u06CC \u062F\u0627\u0633\u062A\u0627\u0646\u200C\u0647\u0627',
+    catInsights: '\u0628\u06CC\u0646\u0634\u200C\u0647\u0627\u06CC\u06CC \u062F\u0631\u0628\u0627\u0631\u0647 \u062D\u0642\u06CC\u0642\u062A',
+    catOther: '\u0633\u0627\u06CC\u0631',
+    reflectionLabel: '\u062A\u0627\u0645\u0644 \u0634\u0645\u0627',
+    reflectionPlaceholder: '\u0627\u0646\u062F\u06CC\u0634\u0647\u200C\u0647\u0627\u06CC \u062E\u0648\u062F \u0631\u0627 \u0628\u0647 \u0627\u0634\u062A\u0631\u0627\u06A9 \u0628\u06AF\u0630\u0627\u0631\u06CC\u062F...',
+    privateLabel: '\u0627\u0631\u0633\u0627\u0644 \u062E\u0635\u0648\u0635\u06CC \u0628\u0647 \u0633\u0627\u0632\u0646\u062F\u0647 \u0633\u0627\u06CC\u062A (\u0628\u062F\u0648\u0646 \u0627\u0646\u062A\u0634\u0627\u0631 \u0639\u0645\u0648\u0645\u06CC)',
+    emailLabel: '\u0627\u06CC\u0645\u06CC\u0644 \u0634\u0645\u0627 (\u0627\u062E\u062A\u06CC\u0627\u0631\u06CC \u2014 \u0627\u06AF\u0631 \u0645\u0627\u06CC\u0644 \u0628\u0647 \u062F\u0631\u06CC\u0627\u0641\u062A \u067E\u0627\u0633\u062E \u0647\u0633\u062A\u06CC\u062F)',
+    emailPlaceholder: '\u0645\u062B\u0644\u0627 name@example.com',
+    submitBtn: '\u0627\u0631\u0633\u0627\u0644 \u062A\u0627\u0645\u0644',
+    submitPrivateBtn: '\u0627\u0631\u0633\u0627\u0644 \u067E\u06CC\u0627\u0645 \u062E\u0635\u0648\u0635\u06CC',
+    submitting: '\u062F\u0631 \u062D\u0627\u0644 \u0627\u0631\u0633\u0627\u0644...',
+    noReflections: '\u0647\u0646\u0648\u0632 \u062A\u0627\u0645\u0644\u06CC \u062F\u0631 \u0627\u06CC\u0646 \u062F\u0633\u062A\u0647 \u0648\u062C\u0648\u062F \u0646\u062F\u0627\u0631\u062F.',
+    loadingReflections: '\u062F\u0631 \u062D\u0627\u0644 \u0628\u0627\u0631\u06AF\u0630\u0627\u0631\u06CC \u062A\u0627\u0645\u0644\u0627\u062A\u2026',
+    rateLimit: '\u0644\u0637\u0641\u0627 {wait} \u062B\u0627\u0646\u06CC\u0647 \u0642\u0628\u0644 \u0627\u0632 \u0627\u0631\u0633\u0627\u0644 \u0645\u062C\u062F\u062F \u0635\u0628\u0631 \u06A9\u0646\u06CC\u062F.',
+    missingFields: '\u0644\u0637\u0641\u0627 \u0646\u0627\u0645 \u0648 \u062A\u0627\u0645\u0644 \u062E\u0648\u062F \u0631\u0627 \u0648\u0627\u0631\u062F \u06A9\u0646\u06CC\u062F.',
+    tooLong: '\u0646\u0627\u0645 \u0628\u0627\u06CC\u062F \u06A9\u0645\u062A\u0631 \u0627\u0632 \u06F3\u06F0 \u0648 \u062A\u0627\u0645\u0644 \u06A9\u0645\u062A\u0631 \u0627\u0632 \u06F5\u06F0\u06F0 \u06A9\u0627\u0631\u0627\u06A9\u062A\u0631 \u0628\u0627\u0634\u062F.',
+    privateNotConfigured: '\u0627\u0631\u0633\u0627\u0644 \u067E\u06CC\u0627\u0645 \u062E\u0635\u0648\u0635\u06CC \u0647\u0646\u0648\u0632 \u067E\u06CC\u06A9\u0631\u0628\u0646\u062F\u06CC \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.',
+    sendFailed: '\u0627\u0631\u0633\u0627\u0644 \u067E\u06CC\u0627\u0645 \u0645\u0645\u06A9\u0646 \u0646\u0634\u062F. \u0644\u0637\u0641\u0627 \u062F\u0648\u0628\u0627\u0631\u0647 \u062A\u0644\u0627\u0634 \u06A9\u0646\u06CC\u062F.',
+    firebaseNotReady: '\u0633\u06CC\u0633\u062A\u0645 \u0646\u0638\u0631\u0627\u062A \u0647\u0646\u0648\u0632 \u0645\u062A\u0635\u0644 \u0646\u06CC\u0633\u062A.',
+    submitFailed: '\u0627\u0631\u0633\u0627\u0644 \u0645\u0645\u06A9\u0646 \u0646\u0634\u062F. \u0644\u0637\u0641\u0627 \u0627\u062A\u0635\u0627\u0644 \u0627\u06CC\u0646\u062A\u0631\u0646\u062A \u062E\u0648\u062F \u0631\u0627 \u0628\u0631\u0631\u0633\u06CC \u06A9\u0646\u06CC\u062F.',
+    privateSent: '\u067E\u06CC\u0627\u0645 \u062E\u0635\u0648\u0635\u06CC \u0634\u0645\u0627 \u0627\u0631\u0633\u0627\u0644 \u0634\u062F. \u0633\u067E\u0627\u0633\u06AF\u0632\u0627\u0631\u06CC\u0645!',
+    publicSent: '\u0627\u0632 \u0628\u0647 \u0627\u0634\u062A\u0631\u0627\u06A9\u200C\u06AF\u0630\u0627\u0631\u06CC \u062A\u0627\u0645\u0644 \u0634\u0645\u0627 \u0633\u067E\u0627\u0633\u06AF\u0632\u0627\u0631\u06CC\u0645!',
+    loadFailed: '\u0628\u0627\u0631\u06AF\u0630\u0627\u0631\u06CC \u062A\u0627\u0645\u0644\u0627\u062A \u0645\u0645\u06A9\u0646 \u0646\u0634\u062F. \u0644\u0637\u0641\u0627 \u062F\u0648\u0628\u0627\u0631\u0647 \u062A\u0644\u0627\u0634 \u06A9\u0646\u06CC\u062F.',
+    footerLink: '\u2190 \u0628\u0627\u0632\u06AF\u0634\u062A \u0628\u0647 \u062F\u0627\u0633\u062A\u0627\u0646 \u06CC\u0648\u0633\u0641',
+    justNow: '\u0647\u0645\u06CC\u0646 \u0627\u0644\u0627\u0646',
+    oneMinuteAgo: '\u06F1 \u062F\u0642\u06CC\u0642\u0647 \u067E\u06CC\u0634',
+    minutesAgo: '{N} \u062F\u0642\u06CC\u0642\u0647 \u067E\u06CC\u0634',
+    oneHourAgo: '\u06F1 \u0633\u0627\u0639\u062A \u067E\u06CC\u0634',
+    hoursAgo: '{N} \u0633\u0627\u0639\u062A \u067E\u06CC\u0634',
+    yesterday: '\u062F\u06CC\u0631\u0648\u0632',
+    daysAgo: '{N} \u0631\u0648\u0632 \u067E\u06CC\u0634',
+    oneMonthAgo: '\u06F1 \u0645\u0627\u0647 \u067E\u06CC\u0634',
+    monthsAgo: '{N} \u0645\u0627\u0647 \u067E\u06CC\u0634',
+    translatedFrom: '\u062A\u0631\u062C\u0645\u0647 \u0634\u062F\u0647 \u0627\u0632 \u0627\u0646\u06AF\u0644\u06CC\u0633\u06CC',
+    translatedFromFa: '\u062A\u0631\u062C\u0645\u0647 \u0634\u062F\u0647 \u0627\u0632 \u0641\u0627\u0631\u0633\u06CC',
+    showOriginal: '\u0646\u0645\u0627\u06CC\u0634 \u0645\u062A\u0646 \u0627\u0635\u0644\u06CC',
+    showTranslation: '\u0646\u0645\u0627\u06CC\u0634 \u062A\u0631\u062C\u0645\u0647',
+    translating: '\u062F\u0631 \u062D\u0627\u0644 \u062A\u0631\u062C\u0645\u0647...',
+    translationFailed: '\u062A\u0631\u062C\u0645\u0647 \u062F\u0631 \u062F\u0633\u062A\u0631\u0633 \u0646\u06CC\u0633\u062A'
+  }
+};
+
 // ── Category Definitions ──
 const CATEGORIES = [
-  { key: 'positive', icon: '&#x2728;', label: 'Positive Feedback' },
-  { key: 'differences', icon: '&#x1F50D;', label: 'Differences in the Stories' },
-  { key: 'insights', icon: '&#x1F4A1;', label: 'Insights About Reality' },
-  { key: 'other', icon: '&#x1F4AC;', label: 'Other' }
+  { key: 'positive', icon: '&#x2728;', labelKey: 'catPositive' },
+  { key: 'differences', icon: '&#x1F50D;', labelKey: 'catDifferences' },
+  { key: 'insights', icon: '&#x1F4A1;', labelKey: 'catInsights' },
+  { key: 'other', icon: '&#x1F4AC;', labelKey: 'catOther' }
 ];
 
 // ── Helpers ──
@@ -511,34 +717,63 @@ function escapeHtml(str) {
 }
 
 function timeAgo(timestamp) {
+  const t = COMMENTS_I18N[currentLang];
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return t.justNow;
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+  if (minutes < 60) return minutes === 1 ? t.oneMinuteAgo : t.minutesAgo.replace('{N}', minutes);
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+  if (hours < 24) return hours === 1 ? t.oneHourAgo : t.hoursAgo.replace('{N}', hours);
   const days = Math.floor(hours / 24);
-  if (days < 30) return days === 1 ? 'yesterday' : `${days} days ago`;
+  if (days < 30) return days === 1 ? t.yesterday : t.daysAgo.replace('{N}', days);
   const months = Math.floor(days / 30);
-  return months === 1 ? '1 month ago' : `${months} months ago`;
+  return months === 1 ? t.oneMonthAgo : t.monthsAgo.replace('{N}', months);
+}
+
+// ── Translation API ──
+const translationCache = new Map();
+
+async function translateText(text, fromLang, toLang) {
+  const cacheKey = `${fromLang}|${toLang}|${text}`;
+  if (translationCache.has(cacheKey)) {
+    return translationCache.get(cacheKey);
+  }
+
+  try {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${fromLang}|${toLang}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Translation API error');
+    const data = await res.json();
+
+    if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+      const translated = data.responseData.translatedText;
+      translationCache.set(cacheKey, translated);
+      return translated;
+    }
+    throw new Error('No translation returned');
+  } catch (err) {
+    console.warn('Translation failed:', err.message);
+    return null;
+  }
 }
 
 // ── Build Category Sections ──
 function buildCategorySections() {
+  const t = COMMENTS_I18N[currentLang];
   const container = document.getElementById('commentsContainer');
   container.innerHTML = CATEGORIES.map(cat => `
     <div class="category-section open" data-category="${cat.key}">
       <div class="category-header" onclick="toggleCategory('${cat.key}')">
         <h3>
           <span class="category-icon">${cat.icon}</span>
-          ${cat.label}
+          ${t[cat.labelKey]}
           <span class="category-count" id="count-${cat.key}">0</span>
         </h3>
         <span class="collapse-arrow">&#x25BC;</span>
       </div>
       <div class="category-body">
         <div class="category-body-inner" id="cards-${cat.key}">
-          <div class="category-placeholder">No reflections yet in this category.</div>
+          <div class="category-placeholder">${t.noReflections}</div>
         </div>
       </div>
     </div>
@@ -551,8 +786,66 @@ function toggleCategory(key) {
   section.classList.toggle('open');
 }
 
+// ── Toggle Original / Translated Text ──
+function toggleOriginal(btn) {
+  const card = btn.closest('.comment-text');
+  const translated = card.querySelector('.comment-translated');
+  const original = card.querySelector('.comment-original');
+  const t = COMMENTS_I18N[currentLang];
+
+  if (original.style.display === 'none') {
+    original.style.display = '';
+    translated.style.display = 'none';
+    btn.textContent = t.showTranslation;
+  } else {
+    original.style.display = 'none';
+    translated.style.display = '';
+    btn.textContent = t.showOriginal;
+  }
+}
+
+// ── Translate Visible Comments ──
+async function translateVisibleComments() {
+  const t = COMMENTS_I18N[currentLang];
+  const cards = document.querySelectorAll('.comment-text[data-original-lang]');
+
+  for (const card of cards) {
+    const originalLang = card.getAttribute('data-original-lang');
+    if (originalLang === currentLang) continue;
+
+    const originalText = card.getAttribute('data-original');
+    if (!originalText) continue;
+
+    const statusEl = card.querySelector('.comment-translation-status');
+    if (!statusEl) continue; // already translated
+
+    const fromLang = originalLang === 'fa' ? 'fa' : 'en';
+    const toLang = currentLang === 'fa' ? 'fa' : 'en';
+
+    const translated = await translateText(originalText, fromLang, toLang);
+
+    if (translated) {
+      const translatedDir = currentLang === 'fa' ? 'rtl' : 'ltr';
+      const originalDir = originalLang === 'fa' ? 'rtl' : 'ltr';
+      const fromLabel = originalLang === 'fa' ? t.translatedFromFa : t.translatedFrom;
+
+      card.innerHTML = `
+        <span class="comment-translated" dir="${translatedDir}">${escapeHtml(translated)}</span>
+        <div class="translation-note">
+          <span class="translation-indicator">${fromLabel}</span>
+          <button class="toggle-original-btn" onclick="toggleOriginal(this)">${t.showOriginal}</button>
+        </div>
+        <span class="comment-original" dir="${originalDir}" style="display:none;">${escapeHtml(originalText)}</span>
+      `;
+    } else if (statusEl) {
+      statusEl.textContent = t.translationFailed;
+    }
+  }
+}
+
 // ── Render Comments ──
 function renderComments(snapshot) {
+  const t = COMMENTS_I18N[currentLang];
   const commentsByCategory = {
     positive: [],
     differences: [],
@@ -579,19 +872,101 @@ function renderComments(snapshot) {
     countEl.textContent = cards.length;
 
     if (cards.length === 0) {
-      container.innerHTML = '<div class="category-placeholder">No reflections yet in this category.</div>';
+      container.innerHTML = `<div class="category-placeholder">${t.noReflections}</div>`;
     } else {
-      container.innerHTML = cards.map(c => `
-        <div class="comment-card">
-          <div class="comment-meta">
-            <span class="comment-author">${escapeHtml(c.name)}</span>
-            <span class="comment-time">${timeAgo(c.timestamp)}</span>
-          </div>
-          <div class="comment-text">${escapeHtml(c.text)}</div>
-        </div>
-      `).join('');
+      container.innerHTML = cards.map(c => {
+        const commentLang = c.lang || 'en';
+        const needsTranslation = commentLang !== currentLang;
+        const textDir = commentLang === 'fa' ? 'rtl' : 'ltr';
+
+        if (needsTranslation) {
+          return `
+            <div class="comment-card">
+              <div class="comment-meta">
+                <span class="comment-author">${escapeHtml(c.name)}</span>
+                <span class="comment-time">${timeAgo(c.timestamp)}</span>
+              </div>
+              <div class="comment-text" data-original="${escapeHtml(c.text)}" data-original-lang="${commentLang}">
+                <span class="comment-original" dir="${textDir}">${escapeHtml(c.text)}</span>
+                <span class="comment-translation-status">${t.translating}</span>
+              </div>
+            </div>`;
+        } else {
+          return `
+            <div class="comment-card">
+              <div class="comment-meta">
+                <span class="comment-author">${escapeHtml(c.name)}</span>
+                <span class="comment-time">${timeAgo(c.timestamp)}</span>
+              </div>
+              <div class="comment-text" dir="${textDir}">${escapeHtml(c.text)}</div>
+            </div>`;
+        }
+      }).join('');
     }
   }
+
+  // Trigger async translation for comments in a different language
+  translateVisibleComments();
+}
+
+// ── Language Switching ──
+function applyLanguage() {
+  const t = COMMENTS_I18N[currentLang];
+  const isFa = currentLang === 'fa';
+
+  // RTL direction
+  document.querySelector('.page-wrapper').setAttribute('dir', isFa ? 'rtl' : 'ltr');
+
+  // Header
+  document.getElementById('backLink').innerHTML = t.backLink;
+  document.getElementById('pageTitle').textContent = t.pageTitle;
+  document.getElementById('pageSubtitle').textContent = t.pageSubtitle;
+  document.getElementById('langLabel').textContent = t.translationLabel;
+
+  // Form
+  document.getElementById('formTitle').textContent = t.formTitle;
+  document.getElementById('nameLabel').textContent = t.nameLabel;
+  document.getElementById('nameInput').placeholder = t.namePlaceholder;
+  document.getElementById('categoryLabel').textContent = t.categoryLabel;
+
+  const sel = document.getElementById('categorySelect');
+  sel.options[0].textContent = t.catPositive;
+  sel.options[1].textContent = t.catDifferences;
+  sel.options[2].textContent = t.catInsights;
+  sel.options[3].textContent = t.catOther;
+
+  document.getElementById('reflectionLabel').textContent = t.reflectionLabel;
+  document.getElementById('commentInput').placeholder = t.reflectionPlaceholder;
+  document.getElementById('privateLabel').textContent = t.privateLabel;
+  document.getElementById('emailLabel').textContent = t.emailLabel;
+  document.getElementById('replyEmail').placeholder = t.emailPlaceholder;
+
+  // Submit button (depends on private checkbox state)
+  const isPrivate = document.getElementById('privateCheck').checked;
+  document.getElementById('submitBtn').textContent = isPrivate ? t.submitPrivateBtn : t.submitBtn;
+
+  // Footer
+  document.getElementById('footerLink').innerHTML = t.footerLink;
+
+  // Toggle button active states
+  document.querySelectorAll('#langToggle button').forEach(btn => {
+    btn.classList.toggle('active-lang', btn.dataset.lang === currentLang);
+  });
+
+  // Rebuild category sections with translated labels
+  buildCategorySections();
+
+  // Re-render comments if data is loaded
+  if (firebaseReady && latestSnapshot) {
+    renderComments(latestSnapshot);
+  }
+}
+
+function switchLanguage(lang) {
+  if (lang === currentLang) return;
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  applyLanguage();
 }
 
 // ── Form Submission ──
@@ -599,6 +974,7 @@ let lastSubmitTime = 0;
 
 document.getElementById('commentForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  const t = COMMENTS_I18N[currentLang];
 
   const msgEl = document.getElementById('formMessage');
   const btn = document.getElementById('submitBtn');
@@ -608,7 +984,7 @@ document.getElementById('commentForm').addEventListener('submit', async (e) => {
   if (now - lastSubmitTime < 30000) {
     const wait = Math.ceil((30000 - (now - lastSubmitTime)) / 1000);
     msgEl.className = 'form-message error';
-    msgEl.textContent = `Please wait ${wait} seconds before submitting again.`;
+    msgEl.textContent = t.rateLimit.replace('{wait}', wait);
     return;
   }
 
@@ -618,29 +994,29 @@ document.getElementById('commentForm').addEventListener('submit', async (e) => {
 
   if (!name || !text) {
     msgEl.className = 'form-message error';
-    msgEl.textContent = 'Please fill in your name and reflection.';
+    msgEl.textContent = t.missingFields;
     return;
   }
 
   if (name.length > 30 || text.length > 500) {
     msgEl.className = 'form-message error';
-    msgEl.textContent = 'Name must be under 30 characters and reflection under 500.';
+    msgEl.textContent = t.tooLong;
     return;
   }
 
   const isPrivate = document.getElementById('privateCheck').checked;
 
   btn.disabled = true;
-  btn.textContent = 'Submitting...';
+  btn.textContent = t.submitting;
   msgEl.textContent = '';
 
   if (isPrivate) {
     // Send via EmailJS (not saved publicly)
     if (!emailjsReady) {
       msgEl.className = 'form-message error';
-      msgEl.textContent = 'Private messaging is not yet configured.';
+      msgEl.textContent = t.privateNotConfigured;
       btn.disabled = false;
-      btn.textContent = 'Send Private Message';
+      btn.textContent = t.submitPrivateBtn;
       return;
     }
 
@@ -655,24 +1031,24 @@ document.getElementById('commentForm').addEventListener('submit', async (e) => {
       document.getElementById('commentInput').value = '';
       document.getElementById('replyEmail').value = '';
       msgEl.className = 'form-message success';
-      msgEl.textContent = 'Your private message has been sent. Thank you!';
+      msgEl.textContent = t.privateSent;
       btn.disabled = false;
-      btn.textContent = 'Send Private Message';
+      btn.textContent = t.submitPrivateBtn;
       setTimeout(() => { msgEl.textContent = ''; }, 4000);
     } catch (err) {
       console.error('Error sending private message:', err);
       msgEl.className = 'form-message error';
-      msgEl.textContent = 'Could not send message. Please try again later.';
+      msgEl.textContent = t.sendFailed;
       btn.disabled = false;
-      btn.textContent = 'Send Private Message';
+      btn.textContent = t.submitPrivateBtn;
     }
   } else {
     // Save publicly to Firebase
     if (!firebaseReady) {
       msgEl.className = 'form-message error';
-      msgEl.textContent = 'Comments are not yet connected. Firebase setup is required.';
+      msgEl.textContent = t.firebaseNotReady;
       btn.disabled = false;
-      btn.textContent = 'Submit Reflection';
+      btn.textContent = t.submitBtn;
       return;
     }
 
@@ -681,53 +1057,63 @@ document.getElementById('commentForm').addEventListener('submit', async (e) => {
         name: name,
         text: text,
         category: category,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        lang: currentLang
       });
 
       lastSubmitTime = Date.now();
       document.getElementById('commentInput').value = '';
       msgEl.className = 'form-message success';
-      msgEl.textContent = 'Thank you for sharing your reflection!';
+      msgEl.textContent = t.publicSent;
       btn.disabled = false;
-      btn.textContent = 'Submit Reflection';
+      btn.textContent = t.submitBtn;
       setTimeout(() => { msgEl.textContent = ''; }, 4000);
     } catch (err) {
       console.error('Error submitting comment:', err);
       msgEl.className = 'form-message error';
-      msgEl.textContent = 'Could not submit. Please check your connection and try again.';
+      msgEl.textContent = t.submitFailed;
       btn.disabled = false;
-      btn.textContent = 'Submit Reflection';
+      btn.textContent = t.submitBtn;
     }
   }
 });
 
 // ── Toggle private mode UI ──
 document.getElementById('privateCheck').addEventListener('change', function() {
+  const t = COMMENTS_I18N[currentLang];
   const btn = document.getElementById('submitBtn');
-  const catRow = document.getElementById('categorySelect').closest('.form-row');
+  const catRow = document.getElementById('categoryRow');
   const emailRow = document.getElementById('replyEmailRow');
   if (this.checked) {
-    btn.textContent = 'Send Private Message';
+    btn.textContent = t.submitPrivateBtn;
     catRow.style.display = 'none';
     emailRow.style.display = '';
   } else {
-    btn.textContent = 'Submit Reflection';
+    btn.textContent = t.submitBtn;
     catRow.style.display = '';
     emailRow.style.display = 'none';
   }
 });
 
+// ── Language Toggle Listeners ──
+document.querySelectorAll('#langToggle button').forEach(btn => {
+  btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
+});
+
 // ── Initialize ──
 buildCategorySections();
+applyLanguage();
 
 if (firebaseReady) {
   // Listen for real-time updates
   commentsRef.on('value', (snapshot) => {
+    latestSnapshot = snapshot;
     renderComments(snapshot);
   }, (err) => {
+    const t = COMMENTS_I18N[currentLang];
     console.error('Firebase read error:', err);
     document.getElementById('commentsContainer').innerHTML =
-      '<div class="loading-comments">Could not load reflections. Please try again later.</div>';
+      `<div class="loading-comments">${t.loadFailed}</div>`;
   });
 } else {
   // Show setup message
