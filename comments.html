@@ -593,8 +593,10 @@ if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
   }
 }
 
-// ── Language State ──
-let currentLang = localStorage.getItem('lang') || 'en';
+// ── Language State: URL param > localStorage > default ──
+const _urlLang = new URLSearchParams(window.location.search).get('lang');
+let currentLang = (_urlLang === 'fa' || _urlLang === 'en') ? _urlLang : (localStorage.getItem('lang') || 'en');
+if (_urlLang) localStorage.setItem('lang', currentLang);
 let latestSnapshot = null;
 
 // ── I18N Translations ──

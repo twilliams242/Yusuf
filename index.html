@@ -1165,10 +1165,12 @@ function updateFooter() {
 }
 
 async function init() {
-  // Restore saved language preference
-  const savedLang = localStorage.getItem('lang');
-  if (savedLang === 'fa') {
+  // Restore language preference: URL param > localStorage > default
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  const initialLang = (urlLang === 'fa' || urlLang === 'en') ? urlLang : localStorage.getItem('lang');
+  if (initialLang === 'fa') {
     currentLang = 'fa';
+    localStorage.setItem('lang', 'fa');
     document.querySelectorAll('#langToggle button').forEach(btn => {
       btn.classList.toggle('active-lang', btn.dataset.lang === 'fa');
     });
