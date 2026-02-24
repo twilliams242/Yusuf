@@ -265,20 +265,24 @@ body {
 .private-check-row {
   margin-bottom: 16px;
 }
-.private-label {
+.form-row .private-label {
   display: flex !important;
   flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   color: var(--verse-num);
   font-family: 'Cormorant Garamond', Georgia, serif;
   text-transform: none;
   letter-spacing: normal;
+  margin-bottom: 0;
 }
 .private-label input[type="checkbox"] {
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
   accent-color: var(--gold);
   cursor: pointer;
 }
