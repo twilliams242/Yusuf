@@ -516,7 +516,7 @@ body {
   <main id="content">
     <div class="loading">
       <div class="spinner"></div>
-      <div>Loading sacred texts&hellip;</div>
+      <div id="loadingMsg">Loading sacred texts&hellip;</div>
     </div>
   </main>
 
@@ -1178,16 +1178,27 @@ async function init() {
 
   buildTOC();
 
+  // Update loading message for Persian
+  if (currentLang === 'fa') {
+    const loadingMsg = document.getElementById('loadingMsg');
+    if (loadingMsg) loadingMsg.innerHTML = I18N.fa.loading;
+  }
+
   // Set up language toggle
   document.querySelectorAll('#langToggle button').forEach(btn => {
     btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
   });
 
   try {
-    // Fetch both sources in parallel
-    await Promise.all([fetchQuran(), fetchBible()]);
+    // Fetch both sources in parallel; also load Persian if that's the saved language
+    const fetches = [fetchQuran(), fetchBible()];
+    if (currentLang === 'fa') fetches.push(loadPersian());
+    await Promise.all(fetches);
+
+    updateHeader();
     buildSections();
     setupActiveTracking();
+    updateFooter();
   } catch (err) {
     console.error('Error loading texts:', err);
     document.getElementById('content').innerHTML = `
