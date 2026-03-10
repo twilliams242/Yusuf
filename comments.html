@@ -864,6 +864,9 @@ function toggleOriginal(btn) {
 }
 
 // ── Translate Visible Comments ──
+// Track which Firebase keys we've already saved translations for (avoids re-render loop)
+const savedTranslations = new Set();
+
 async function translateVisibleComments() {
   const t = COMMENTS_I18N[currentLang];
   const cards = document.querySelectorAll('.comment-text[data-original-lang]');
@@ -872,11 +875,13 @@ async function translateVisibleComments() {
     const originalLang = card.getAttribute('data-original-lang');
     if (originalLang === currentLang) continue;
 
-    const originalText = card.getAttribute('data-original');
-    if (!originalText) continue;
-
     const statusEl = card.querySelector('.comment-translation-status');
     if (!statusEl) continue; // already translated
+
+    // Get the raw original text from the hidden span (not the escaped attribute)
+    const originalSpan = card.querySelector('.comment-original');
+    const originalText = originalSpan ? originalSpan.textContent : null;
+    if (!originalText) continue;
 
     const fromLang = originalLang === 'fa' ? 'fa' : 'en';
     const toLang = currentLang === 'fa' ? 'fa' : 'en';
@@ -896,6 +901,14 @@ async function translateVisibleComments() {
         </div>
         <span class="comment-original" dir="${originalDir}" style="display:none;">${escapeHtml(originalText)}</span>
       `;
+
+      // Cache translation in Firebase so future visits don't need the API
+      const firebaseKey = card.getAttribute('data-firebase-key');
+      if (firebaseKey && firebaseReady && !savedTranslations.has(firebaseKey + '_' + toLang)) {
+        savedTranslations.add(firebaseKey + '_' + toLang);
+        commentsRef.child(firebaseKey).child('translations').child(toLang).set(translated)
+          .catch(err => console.warn('Failed to cache translation:', err.message));
+      }
     } else if (statusEl) {
       statusEl.textContent = t.translationFailed;
     }
@@ -914,6 +927,7 @@ function renderComments(snapshot) {
 
   snapshot.forEach(child => {
     const data = child.val();
+    data._key = child.key;
     const cat = commentsByCategory[data.category] ? data.category : 'other';
     commentsByCategory[cat].push(data);
   });
@@ -939,13 +953,38 @@ function renderComments(snapshot) {
         const textDir = commentLang === 'fa' ? 'rtl' : 'ltr';
 
         if (needsTranslation) {
-          return `
+          // Check for a cached translation stored in Firebase
+          const targetLang = currentLang === 'fa' ? 'fa' : 'en';
+          const cachedTranslation = c.translations && c.translations[targetLang];
+
+          if (cachedTranslation) {
+            const translatedDir = currentLang === 'fa' ? 'rtl' : 'ltr';
+            const originalDir = commentLang === 'fa' ? 'rtl' : 'ltr';
+            const fromLabel = commentLang === 'fa' ? t.translatedFromFa : t.translatedFrom;
+            return `
             <div class="comment-card">
               <div class="comment-meta">
                 <span class="comment-author">${escapeHtml(c.name)}</span>
                 <span class="comment-time">${timeAgo(c.timestamp)}</span>
               </div>
               <div class="comment-text" data-original="${escapeHtml(c.text)}" data-original-lang="${commentLang}">
+                <span class="comment-translated" dir="${translatedDir}">${escapeHtml(cachedTranslation)}</span>
+                <div class="translation-note">
+                  <span class="translation-indicator">${fromLabel}</span>
+                  <button class="toggle-original-btn" onclick="toggleOriginal(this)">${t.showOriginal}</button>
+                </div>
+                <span class="comment-original" dir="${originalDir}" style="display:none;">${escapeHtml(c.text)}</span>
+              </div>
+            </div>`;
+          }
+
+          return `
+            <div class="comment-card">
+              <div class="comment-meta">
+                <span class="comment-author">${escapeHtml(c.name)}</span>
+                <span class="comment-time">${timeAgo(c.timestamp)}</span>
+              </div>
+              <div class="comment-text" data-original="${escapeHtml(c.text)}" data-original-lang="${commentLang}" data-firebase-key="${c._key}">
                 <span class="comment-original" dir="${textDir}">${escapeHtml(c.text)}</span>
                 <span class="comment-translation-status">${t.translating}</span>
               </div>
