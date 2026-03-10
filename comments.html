@@ -864,6 +864,9 @@ function toggleOriginal(btn) {
 }
 
 // ── Translate Visible Comments ──
+// Track which Firebase keys we've already saved translations for (avoids re-render loop)
+const savedTranslations = new Set();
+
 async function translateVisibleComments() {
   const t = COMMENTS_I18N[currentLang];
   const cards = document.querySelectorAll('.comment-text[data-original-lang]');
@@ -872,11 +875,13 @@ async function translateVisibleComments() {
     const originalLang = card.getAttribute('data-original-lang');
     if (originalLang === currentLang) continue;
 
-    const originalText = card.getAttribute('data-original');
-    if (!originalText) continue;
-
     const statusEl = card.querySelector('.comment-translation-status');
     if (!statusEl) continue; // already translated
+
+    // Get the raw original text from the hidden span (not the escaped attribute)
+    const originalSpan = card.querySelector('.comment-original');
+    const originalText = originalSpan ? originalSpan.textContent : null;
+    if (!originalText) continue;
 
     const fromLang = originalLang === 'fa' ? 'fa' : 'en';
     const toLang = currentLang === 'fa' ? 'fa' : 'en';
@@ -899,7 +904,8 @@ async function translateVisibleComments() {
 
       // Cache translation in Firebase so future visits don't need the API
       const firebaseKey = card.getAttribute('data-firebase-key');
-      if (firebaseKey && firebaseReady) {
+      if (firebaseKey && firebaseReady && !savedTranslations.has(firebaseKey + '_' + toLang)) {
+        savedTranslations.add(firebaseKey + '_' + toLang);
         commentsRef.child(firebaseKey).child('translations').child(toLang).set(translated)
           .catch(err => console.warn('Failed to cache translation:', err.message));
       }
