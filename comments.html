@@ -740,6 +740,58 @@ function timeAgo(timestamp) {
 // ── Translation API ──
 const translationCache = new Map();
 
+async function translateChunk(chunk, fromLang, toLang) {
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${fromLang}|${toLang}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Translation API error');
+  const data = await res.json();
+
+  if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+    return data.responseData.translatedText;
+  }
+  throw new Error('No translation returned');
+}
+
+// Split text into chunks that stay within the MyMemory API ~500 char limit,
+// breaking at sentence boundaries where possible.
+function splitTextForTranslation(text, maxLen = 450) {
+  if (text.length <= maxLen) return [text];
+
+  const chunks = [];
+  let remaining = text;
+
+  while (remaining.length > 0) {
+    if (remaining.length <= maxLen) {
+      chunks.push(remaining);
+      break;
+    }
+
+    // Try to break at the last sentence-ending punctuation within the limit
+    let breakAt = -1;
+    for (let i = maxLen; i >= 0; i--) {
+      if ('.!?\u06D4\u061F'.includes(remaining[i])) {
+        breakAt = i + 1;
+        break;
+      }
+    }
+
+    // Fall back to last space within the limit
+    if (breakAt <= 0) {
+      breakAt = remaining.lastIndexOf(' ', maxLen);
+    }
+
+    // Last resort: hard break at maxLen
+    if (breakAt <= 0) {
+      breakAt = maxLen;
+    }
+
+    chunks.push(remaining.slice(0, breakAt).trim());
+    remaining = remaining.slice(breakAt).trim();
+  }
+
+  return chunks;
+}
+
 async function translateText(text, fromLang, toLang) {
   const cacheKey = `${fromLang}|${toLang}|${text}`;
   if (translationCache.has(cacheKey)) {
@@ -747,17 +799,17 @@ async function translateText(text, fromLang, toLang) {
   }
 
   try {
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${fromLang}|${toLang}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Translation API error');
-    const data = await res.json();
+    const chunks = splitTextForTranslation(text);
+    const translatedChunks = [];
 
-    if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
-      const translated = data.responseData.translatedText;
-      translationCache.set(cacheKey, translated);
-      return translated;
+    for (const chunk of chunks) {
+      const translated = await translateChunk(chunk, fromLang, toLang);
+      translatedChunks.push(translated);
     }
-    throw new Error('No translation returned');
+
+    const fullTranslation = translatedChunks.join(' ');
+    translationCache.set(cacheKey, fullTranslation);
+    return fullTranslation;
   } catch (err) {
     console.warn('Translation failed:', err.message);
     return null;
