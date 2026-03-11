@@ -1159,6 +1159,15 @@ document.getElementById('commentForm').addEventListener('submit', async (e) => {
         lang: currentLang
       });
 
+      // Notify via email that a new public comment was posted
+      if (emailjsReady) {
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          from_name: name,
+          message: `[${category}] ${text}`,
+          reply_email: 'Public comment (no reply email)'
+        }).catch(err => console.warn('Email notification failed:', err.message));
+      }
+
       lastSubmitTime = Date.now();
       document.getElementById('commentInput').value = '';
       msgEl.className = 'form-message success';
